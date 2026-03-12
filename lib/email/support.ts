@@ -50,6 +50,8 @@ export async function sendSupportEmail(options: SupportEmailOptions): Promise<vo
 
   const env = getEnv();
   const fromEmail = env.SUPPORT_EMAIL || 'support@example.com';
+  
+  const htmlContent = `
     <h2>Support Ticket Received</h2>
     <p>Thank you for contacting our enterprise support team.</p>
     
