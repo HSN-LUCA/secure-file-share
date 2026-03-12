@@ -24,6 +24,7 @@ export interface CustomReportConfig {
 }
 
 export interface ScheduledReportConfig {
+  customReportId?: string;
   name: string;
   description?: string;
   scheduleType: 'daily' | 'weekly' | 'monthly';
