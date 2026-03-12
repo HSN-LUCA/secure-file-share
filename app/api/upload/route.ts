@@ -9,11 +9,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { validateFile, sanitizeFileName } from '@/lib/validation/file-validation';
 import {
-  validateFileName,
-  validateFileSize,
   validateCaptchaToken,
   sanitizeCaptchaToken,
-  sanitizeUserInput,
 } from '@/lib/validation/input-validation';
 import { generateShareCode } from '@/lib/share-code';
 import { uploadFile } from '@/lib/storage/utils';
@@ -25,12 +22,6 @@ import { verifyCaptchaToken, getCaptchaErrorMessage } from '@/lib/captcha/verifi
 import { createRateLimitingMiddleware, getClientIp, createRateLimitErrorResponse } from '@/lib/middleware/rate-limiting';
 import { createBotDetectionMiddleware, logBotDetectionEvent } from '@/lib/middleware/bot-detection';
 import { getUserFromRequest } from '@/lib/auth/middleware';
-
-// Maximum file size for free plan (100MB)
-const MAX_FILE_SIZE = 100 * 1024 * 1024;
-
-// Default storage duration for free plan (20 minutes)
-const DEFAULT_STORAGE_DURATION_MINUTES = 20;
 
 // Create middleware instances
 const rateLimitMiddleware = createRateLimitingMiddleware({
@@ -127,10 +118,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const sanitizedCaptchaToken = sanitizeCaptchaToken(captchaToken);
 
     // Validate share number if provided
-    let shareNumber: number | null = null;
+    let shareCode: string;
     if (shareNumberStr) {
       const parsed = parseInt(shareNumberStr, 10);
       if (isNaN(parsed) || parsed < 1) {
@@ -139,7 +129,10 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      shareNumber = parsed;
+      shareCode = parsed.toString();
+    } else {
+      // Generate random share code if not provided
+      shareCode = generateShareCode();
     }
 
     // Verify CAPTCHA token
@@ -275,9 +268,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate unique file ID and share code
+    // Generate unique file ID
     const fileId = uuidv4();
-    const shareCode = generateShareCode();
 
     // Calculate expiration time
     const expiresAt = new Date(Date.now() + storageDurationMinutes * 60 * 1000);

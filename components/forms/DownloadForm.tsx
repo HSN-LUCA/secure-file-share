@@ -33,14 +33,14 @@ export function DownloadForm() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Validate share code format (numeric, 6 digits)
+  // Validate share code format (numeric, any positive number)
   const isValidShareCode = (code: string): boolean => {
-    return /^\d{6}$/.test(code);
+    return /^\d+$/.test(code) && parseInt(code, 10) > 0;
   };
 
   // Handle share code input change
   const handleShareCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    const value = e.target.value.replace(/\D/g, '');
     setState(prev => ({
       ...prev,
       shareCode: value,
@@ -58,7 +58,7 @@ export function DownloadForm() {
     if (!isValidShareCode(state.shareCode)) {
       setState(prev => ({
         ...prev,
-        error: 'Share code must be 6 digits',
+        error: 'Share code must be a positive number',
       }));
       return;
     }
@@ -334,16 +334,15 @@ export function DownloadForm() {
           ref={fileInputRef}
           type="text"
           inputMode="numeric"
-          placeholder="000000"
+          placeholder="Enter share code"
           value={state.shareCode}
           onChange={handleShareCodeChange}
           disabled={state.loading}
-          maxLength={6}
           className="w-full px-4 py-3 text-center text-2xl font-mono font-bold border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 disabled:bg-neutral-100 dark:disabled:bg-neutral-700 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
-          aria-label="Enter 6-digit share code"
+          aria-label="Enter share code"
         />
         <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center mt-2">
-          Enter the 6-digit code you received
+          Enter the share code you received
         </p>
       </div>
 
