@@ -15,7 +15,7 @@ import { getApiKey, getApiWebhook, updateApiWebhook, deleteApiWebhook } from '@/
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { keyId: string; webhookId: string } }
+  { params }: { params: Promise<{ keyId: string; webhookId: string }> }
 ) {
   try {
     // Verify authentication
@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    const { keyId, webhookId } = params;
+    const { keyId, webhookId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);
@@ -91,7 +91,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { keyId: string; webhookId: string } }
+  { params }: { params: Promise<{ keyId: string; webhookId: string }> }
 ) {
   try {
     // Verify authentication
@@ -103,7 +103,7 @@ export async function PATCH(
       );
     }
 
-    const { keyId, webhookId } = params;
+    const { keyId, webhookId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);
@@ -232,7 +232,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { keyId: string; webhookId: string } }
+  { params }: { params: Promise<{ keyId: string; webhookId: string }> }
 ) {
   try {
     // Verify authentication
@@ -244,7 +244,7 @@ export async function DELETE(
       );
     }
 
-    const { keyId, webhookId } = params;
+    const { keyId, webhookId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);

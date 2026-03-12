@@ -21,7 +21,7 @@ import {
 
 async function handleGet(
   request: AuthenticatedRequest,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }> }
 ): Promise<NextResponse> {
   try {
     const user = request.user;
@@ -33,7 +33,7 @@ async function handleGet(
       );
     }
 
-    const { reportId } = params;
+    const { reportId } = await params;
 
     const result = await getCustomReport(reportId);
 
@@ -71,7 +71,7 @@ async function handleGet(
 
 async function handlePut(
   request: AuthenticatedRequest,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }> }
 ): Promise<NextResponse> {
   try {
     const user = request.user;
@@ -83,7 +83,7 @@ async function handlePut(
       );
     }
 
-    const { reportId } = params;
+    const { reportId } = await params;
 
     // Verify user owns the report
     const reportResult = await getCustomReport(reportId);
@@ -147,7 +147,7 @@ async function handlePut(
 
 async function handleDelete(
   request: AuthenticatedRequest,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }> }
 ): Promise<NextResponse> {
   try {
     const user = request.user;
@@ -159,7 +159,7 @@ async function handleDelete(
       );
     }
 
-    const { reportId } = params;
+    const { reportId } = await params;
 
     // Verify user owns the report
     const reportResult = await getCustomReport(reportId);

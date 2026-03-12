@@ -13,7 +13,7 @@ import { getApiKey, getApiKeyUsage } from '@/lib/db/queries';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { keyId: string } }
+  { params }: { params: Promise<{ keyId: string }> }
 ) {
   try {
     // Verify authentication
@@ -25,7 +25,7 @@ export async function GET(
       );
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);

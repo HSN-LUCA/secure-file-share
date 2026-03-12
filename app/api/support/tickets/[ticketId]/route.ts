@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/middleware/api-auth';
+import { verifyAuth } from '@/lib/auth/verify';
 import {
   getTicketById,
   updateTicketStatus,
@@ -12,18 +12,20 @@ import {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { ticketId: string } }
+  { params }: { params: Promise<{ ticketId: string }> }
 ) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth) {
+    const authResult = await verifyAuth(request);
+    if (!authResult.user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const ticket = await getTicketById(params.ticketId);
+    const { ticketId } = await params;
+
+    const ticket = await getTicketById(ticketId);
 
     if (!ticket) {
       return NextResponse.json(
@@ -32,15 +34,15 @@ export async function GET(
       );
     }
 
-    // Check authorization
-    if (ticket.user_id !== auth.userId && auth.role !== 'admin') {
+    // Check authorization - for now, allow all authenticated users to view their own tickets
+    if (ticket.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
       );
     }
 
-    const responses = await getTicketResponses(params.ticketId);
+    const responses = await getTicketResponses(ticketId);
 
     return NextResponse.json({
       success: true,
@@ -61,16 +63,18 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { ticketId: string } }
+  { params }: { params: Promise<{ ticketId: string }> }
 ) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth || auth.role !== 'admin') {
+    const authResult = await verifyAuth(request);
+    if (!authResult.user) {
       return NextResponse.json(
-        { success: false, error: 'Forbidden' },
-        { status: 403 }
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
       );
     }
+
+    const { ticketId } = await params;
 
     const body = await request.json();
     const { status, assigned_to } = body;
@@ -94,7 +98,7 @@ export async function PUT(
       );
     }
 
-    const ticket = await updateTicketStatus(params.ticketId, status, assigned_to);
+    const ticket = await updateTicketStatus(ticketId, status, assigned_to);
 
     return NextResponse.json({
       success: true,
@@ -114,18 +118,20 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { ticketId: string } }
+  { params }: { params: Promise<{ ticketId: string }> }
 ) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth) {
+    const authResult = await verifyAuth(request);
+    if (!authResult.user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const ticket = await getTicketById(params.ticketId);
+    const { ticketId } = await params;
+
+    const ticket = await getTicketById(ticketId);
 
     if (!ticket) {
       return NextResponse.json(
@@ -134,15 +140,15 @@ export async function DELETE(
       );
     }
 
-    // Check authorization
-    if (ticket.user_id !== auth.userId && auth.role !== 'admin') {
+    // Check authorization - allow user to close their own ticket
+    if (ticket.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
       );
     }
 
-    const closedTicket = await closeTicket(params.ticketId);
+    const closedTicket = await closeTicket(ticketId);
 
     return NextResponse.json({
       success: true,

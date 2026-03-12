@@ -49,8 +49,8 @@ export function verifyAccessToken(token: string): DecodedToken | null {
  * Middleware to verify authentication
  * Returns 401 if token is missing or invalid
  */
-export function withAuth(handler: (req: AuthenticatedRequest) => Promise<NextResponse>) {
-  return async (request: NextRequest): Promise<NextResponse> => {
+export function withAuth(handler: (req: AuthenticatedRequest, context?: any) => Promise<NextResponse>) {
+  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
     try {
       // Extract token from request
       const token = extractTokenFromRequest(request);
@@ -76,8 +76,8 @@ export function withAuth(handler: (req: AuthenticatedRequest) => Promise<NextRes
       const authenticatedRequest = request as AuthenticatedRequest;
       authenticatedRequest.user = user;
 
-      // Call handler with authenticated request
-      return await handler(authenticatedRequest);
+      // Call handler with authenticated request and context (params)
+      return await handler(authenticatedRequest, context);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: 'Authentication failed' },

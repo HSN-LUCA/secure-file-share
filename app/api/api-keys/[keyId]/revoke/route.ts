@@ -9,7 +9,7 @@ import { getApiKey, revokeApiKey } from '@/lib/db/queries';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { keyId: string } }
+  { params }: { params: Promise<{ keyId: string }> }
 ) {
   try {
     // Verify authentication
@@ -21,7 +21,7 @@ export async function POST(
       );
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);

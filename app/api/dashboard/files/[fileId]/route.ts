@@ -38,7 +38,7 @@ function getClientIp(request: NextRequest): string {
 
 async function deleteHandler(
   request: NextRequest,
-  { params }: { params: { fileId: string } }
+  { params }: { params: Promise<{ fileId: string }> }
 ): Promise<NextResponse<DeleteFileResponse>> {
   try {
     const user = (request as AuthenticatedRequest).user;
@@ -50,7 +50,7 @@ async function deleteHandler(
       );
     }
 
-    const { fileId } = params;
+    const { fileId } = await params;
 
     // ========================================================================
     // VALIDATE FILE ID

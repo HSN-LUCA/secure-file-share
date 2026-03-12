@@ -26,7 +26,7 @@ import { generateApiKey } from '@/lib/api-keys/generator';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { keyId: string } }
+  { params }: { params: Promise<{ keyId: string }> }
 ) {
   try {
     // Verify authentication
@@ -38,7 +38,7 @@ export async function GET(
       );
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
 
     // Get API key
     const { data: apiKey, error } = await getApiKey(keyId);
@@ -92,7 +92,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { keyId: string } }
+  { params }: { params: Promise<{ keyId: string }> }
 ) {
   try {
     // Verify authentication
@@ -104,7 +104,7 @@ export async function PATCH(
       );
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);
@@ -176,7 +176,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { keyId: string } }
+  { params }: { params: Promise<{ keyId: string }> }
 ) {
   try {
     // Verify authentication
@@ -188,7 +188,7 @@ export async function DELETE(
       );
     }
 
-    const { keyId } = params;
+    const { keyId } = await params;
 
     // Get API key
     const { data: apiKey, error: getError } = await getApiKey(keyId);

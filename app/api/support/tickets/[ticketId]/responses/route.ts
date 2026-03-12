@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/middleware/api-auth';
+import { verifyAuth } from '@/lib/auth/verify';
 import { getTicketById, addTicketResponse, getTicketResponses } from '@/lib/db/support-tickets';
 
 /**
@@ -7,18 +7,20 @@ import { getTicketById, addTicketResponse, getTicketResponses } from '@/lib/db/s
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { ticketId: string } }
+  { params }: { params: Promise<{ ticketId: string }> }
 ) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth) {
+    const authResult = await verifyAuth(request);
+    if (!authResult.user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const ticket = await getTicketById(params.ticketId);
+    const { ticketId } = await params;
+
+    const ticket = await getTicketById(ticketId);
 
     if (!ticket) {
       return NextResponse.json(
@@ -28,7 +30,7 @@ export async function POST(
     }
 
     // Check authorization
-    if (ticket.user_id !== auth.userId && auth.role !== 'admin') {
+    if (ticket.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
@@ -45,14 +47,11 @@ export async function POST(
       );
     }
 
-    // Only admins can mark as internal
-    const isInternal = auth.role === 'admin' && body.is_internal === true;
-
     const response = await addTicketResponse(
-      params.ticketId,
-      auth.userId,
+      ticketId,
+      authResult.user.userId,
       message,
-      isInternal,
+      false,
       attachments
     );
 
@@ -77,18 +76,20 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { ticketId: string } }
+  { params }: { params: Promise<{ ticketId: string }> }
 ) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth) {
+    const authResult = await verifyAuth(request);
+    if (!authResult.user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const ticket = await getTicketById(params.ticketId);
+    const { ticketId } = await params;
+
+    const ticket = await getTicketById(ticketId);
 
     if (!ticket) {
       return NextResponse.json(
@@ -98,23 +99,18 @@ export async function GET(
     }
 
     // Check authorization
-    if (ticket.user_id !== auth.userId && auth.role !== 'admin') {
+    if (ticket.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
       );
     }
 
-    const responses = await getTicketResponses(params.ticketId);
-
-    // Filter out internal responses for non-admin users
-    const filteredResponses = auth.role === 'admin'
-      ? responses
-      : responses.filter(r => !r.is_internal);
+    const responses = await getTicketResponses(ticketId);
 
     return NextResponse.json({
       success: true,
-      responses: filteredResponses,
+      responses,
     });
   } catch (error) {
     console.error('Error fetching ticket responses:', error);

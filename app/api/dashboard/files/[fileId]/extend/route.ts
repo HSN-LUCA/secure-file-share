@@ -41,7 +41,7 @@ function getClientIp(request: NextRequest): string {
 
 async function extendHandler(
   request: NextRequest,
-  { params }: { params: { fileId: string } }
+  { params }: { params: Promise<{ fileId: string }> }
 ): Promise<NextResponse<ExtendExpirationResponse>> {
   try {
     const user = (request as AuthenticatedRequest).user;
@@ -53,7 +53,7 @@ async function extendHandler(
       );
     }
 
-    const { fileId } = params;
+    const { fileId } = await params;
 
     // ========================================================================
     // VALIDATE FILE ID
