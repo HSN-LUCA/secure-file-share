@@ -1,4 +1,4 @@
-import { pool } from './pool';
+import { query as dbQuery } from './pool';
 
 export interface SupportTicket {
   id: string;
@@ -37,14 +37,14 @@ export async function createTicket(
   priority: string = 'medium',
   attachments: string[] = []
 ): Promise<SupportTicket> {
-  const query = `
+  const queryText = `
     INSERT INTO support_tickets (
       user_id, subject, description, category, priority, status, attachments, created_at, updated_at
     ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
     RETURNING *
   `;
 
-  const result = await pool.query(query, [
+  const result = await dbQuery(queryText, [
     userId,
     subject,
     description,
@@ -61,11 +61,11 @@ export async function createTicket(
  * Get ticket by ID
  */
 export async function getTicketById(ticketId: string): Promise<SupportTicket | null> {
-  const query = `
+  const queryText = `
     SELECT * FROM support_tickets WHERE id = $1
   `;
 
-  const result = await pool.query(query, [ticketId]);
+  const result = await dbQuery(queryText, [ticketId]);
   return result.rows[0] || null;
 }
 
@@ -77,7 +77,7 @@ export async function getUserTickets(
   limit: number = 10,
   offset: number = 0
 ): Promise<{ tickets: SupportTicket[]; total: number }> {
-  const query = `
+  const queryText = `
     SELECT * FROM support_tickets 
     WHERE user_id = $1 
     ORDER BY created_at DESC 
@@ -89,8 +89,8 @@ export async function getUserTickets(
   `;
 
   const [ticketsResult, countResult] = await Promise.all([
-    pool.query(query, [userId, limit, offset]),
-    pool.query(countQuery, [userId]),
+    dbQuery(queryText, [userId, limit, offset]),
+    dbQuery(countQuery, [userId]),
   ]);
 
   return {
@@ -108,20 +108,20 @@ export async function getAllTickets(
   limit: number = 10,
   offset: number = 0
 ): Promise<{ tickets: SupportTicket[]; total: number }> {
-  let query = 'SELECT * FROM support_tickets WHERE 1=1';
+  let queryText = 'SELECT * FROM support_tickets WHERE 1=1';
   const params: any[] = [];
 
   if (status) {
-    query += ` AND status = $${params.length + 1}`;
+    queryText += ` AND status = $${params.length + 1}`;
     params.push(status);
   }
 
   if (priority) {
-    query += ` AND priority = $${params.length + 1}`;
+    queryText += ` AND priority = $${params.length + 1}`;
     params.push(priority);
   }
 
-  query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+  queryText += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
   params.push(limit, offset);
 
   const countQuery = `
@@ -135,8 +135,8 @@ export async function getAllTickets(
   if (priority) countParams.push(priority);
 
   const [ticketsResult, countResult] = await Promise.all([
-    pool.query(query, params),
-    pool.query(countQuery, countParams),
+    dbQuery(queryText, params),
+    dbQuery(countQuery, countParams),
   ]);
 
   return {
@@ -153,7 +153,7 @@ export async function updateTicketStatus(
   status: string,
   assignedTo?: string
 ): Promise<SupportTicket> {
-  const query = `
+  const queryText = `
     UPDATE support_tickets 
     SET status = $1, assigned_to = $2, updated_at = NOW()
     ${status === 'resolved' ? ', resolved_at = NOW()' : ''}
@@ -161,7 +161,7 @@ export async function updateTicketStatus(
     RETURNING *
   `;
 
-  const result = await pool.query(query, [status, assignedTo || null, ticketId]);
+  const result = await dbQuery(queryText, [status, assignedTo || null, ticketId]);
   return result.rows[0];
 }
 
@@ -175,14 +175,14 @@ export async function addTicketResponse(
   isInternal: boolean = false,
   attachments: string[] = []
 ): Promise<TicketResponse> {
-  const query = `
+  const queryText = `
     INSERT INTO ticket_responses (
       ticket_id, user_id, message, is_internal, attachments, created_at
     ) VALUES ($1, $2, $3, $4, $5, NOW())
     RETURNING *
   `;
 
-  const result = await pool.query(query, [
+  const result = await dbQuery(queryText, [
     ticketId,
     userId,
     message,
@@ -191,7 +191,7 @@ export async function addTicketResponse(
   ]);
 
   // Update ticket updated_at
-  await pool.query('UPDATE support_tickets SET updated_at = NOW() WHERE id = $1', [ticketId]);
+  await dbQuery('UPDATE support_tickets SET updated_at = NOW() WHERE id = $1', [ticketId]);
 
   return result.rows[0];
 }
@@ -200,13 +200,13 @@ export async function addTicketResponse(
  * Get ticket responses
  */
 export async function getTicketResponses(ticketId: string): Promise<TicketResponse[]> {
-  const query = `
+  const queryText = `
     SELECT * FROM ticket_responses 
     WHERE ticket_id = $1 
     ORDER BY created_at ASC
   `;
 
-  const result = await pool.query(query, [ticketId]);
+  const result = await dbQuery(queryText, [ticketId]);
   return result.rows;
 }
 
@@ -214,12 +214,12 @@ export async function getTicketResponses(ticketId: string): Promise<TicketRespon
  * Search tickets
  */
 export async function searchTickets(
-  query: string,
+  searchQuery: string,
   userId?: string,
   limit: number = 10,
   offset: number = 0
 ): Promise<{ tickets: SupportTicket[]; total: number }> {
-  const searchQuery = `
+  const queryText = `
     SELECT * FROM support_tickets 
     WHERE (subject ILIKE $1 OR description ILIKE $1)
     ${userId ? 'AND user_id = $2' : ''}
@@ -233,13 +233,13 @@ export async function searchTickets(
     ${userId ? 'AND user_id = $2' : ''}
   `;
 
-  const searchTerm = `%${query}%`;
+  const searchTerm = `%${searchQuery}%`;
   const params = userId ? [searchTerm, userId, limit, offset] : [searchTerm, limit, offset];
   const countParams = userId ? [searchTerm, userId] : [searchTerm];
 
   const [ticketsResult, countResult] = await Promise.all([
-    pool.query(searchQuery, params),
-    pool.query(countQuery, countParams),
+    dbQuery(queryText, params),
+    dbQuery(countQuery, countParams),
   ]);
 
   return {
@@ -258,7 +258,7 @@ export async function getTicketStats(): Promise<{
   resolved: number;
   average_resolution_time: number;
 }> {
-  const query = `
+  const queryText = `
     SELECT 
       COUNT(*) as total,
       SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) as open,
@@ -269,7 +269,7 @@ export async function getTicketStats(): Promise<{
     WHERE resolved_at IS NOT NULL
   `;
 
-  const result = await pool.query(query);
+  const result = await dbQuery(queryText);
   const row = result.rows[0];
 
   return {
@@ -285,13 +285,13 @@ export async function getTicketStats(): Promise<{
  * Close ticket
  */
 export async function closeTicket(ticketId: string): Promise<SupportTicket> {
-  const query = `
+  const queryText = `
     UPDATE support_tickets 
     SET status = 'closed', updated_at = NOW()
     WHERE id = $1
     RETURNING *
   `;
 
-  const result = await pool.query(query, [ticketId]);
+  const result = await dbQuery(queryText, [ticketId]);
   return result.rows[0];
 }

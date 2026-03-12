@@ -1,4 +1,4 @@
-import { pool } from '@/lib/db/pool';
+import { query as dbQuery } from '@/lib/db/pool';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import sharp from 'sharp';
 import crypto from 'crypto';
@@ -42,7 +42,7 @@ const s3Client = new S3Client({
  */
 export async function getBrandingConfig(userId: string): Promise<BrandingConfig | null> {
   try {
-    const result = await pool.query(
+    const result = await dbQuery(
       'SELECT * FROM branding_configs WHERE user_id = $1',
       [userId]
     );
@@ -61,7 +61,7 @@ export async function upsertBrandingConfig(
   config: Partial<BrandingConfig>
 ): Promise<BrandingConfig> {
   try {
-    const result = await pool.query(
+    const result = await dbQuery(
       `INSERT INTO branding_configs (user_id, primary_color, secondary_color, accent_color, company_name, company_description, support_email, support_phone)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        ON CONFLICT (user_id) DO UPDATE SET
@@ -210,14 +210,14 @@ export async function uploadLogo(
     const url = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`;
 
     // Store logo upload record
-    await pool.query(
+    await dbQuery(
       `INSERT INTO logo_uploads (branding_config_id, s3_key, file_name, file_size, mime_type, width, height, is_active)
        SELECT id, $2, $3, $4, $5, $6, $7, true FROM branding_configs WHERE user_id = $1`,
       [userId, s3Key, fileName, optimizedBuffer.length, mimeType, metadata.width || 0, metadata.height || 0]
     );
 
     // Update branding config with logo URL
-    await pool.query(
+    await dbQuery(
       'UPDATE branding_configs SET logo_url = $1, logo_s3_key = $2, updated_at = NOW() WHERE user_id = $3',
       [url, s3Key, userId]
     );
@@ -247,7 +247,7 @@ export async function deleteLogo(userId: string, s3Key: string): Promise<void> {
     );
 
     // Update branding config
-    await pool.query(
+    await dbQuery(
       'UPDATE branding_configs SET logo_url = NULL, logo_s3_key = NULL, updated_at = NOW() WHERE user_id = $1',
       [userId]
     );
@@ -276,7 +276,7 @@ export async function updateColorScheme(
       throw new Error('Invalid color format');
     }
 
-    const result = await pool.query(
+    const result = await dbQuery(
       `UPDATE branding_configs 
        SET primary_color = $1, secondary_color = $2, accent_color = $3, updated_at = NOW()
        WHERE user_id = $4
@@ -323,7 +323,7 @@ export async function generateDomainVerification(
     }
 
     // Store verification record
-    await pool.query(
+    await dbQuery(
       `INSERT INTO domain_verifications (branding_config_id, domain, verification_token, dns_record_name, dns_record_value, expires_at)
        VALUES ($1, $2, $3, $4, $5, NOW() + INTERVAL '7 days')`,
       [brandingConfig.id, domain, token, dnsRecordName, dnsRecordValue]
@@ -343,7 +343,7 @@ export async function verifyCustomDomain(userId: string, domain: string): Promis
   try {
     // In production, you would perform actual DNS lookup here
     // For now, we'll mark as verified after checking the verification record exists
-    const result = await pool.query(
+    const result = await dbQuery(
       `UPDATE domain_verifications 
        SET verified_at = NOW()
        WHERE domain = $1 AND branding_config_id = (SELECT id FROM branding_configs WHERE user_id = $2)
@@ -356,7 +356,7 @@ export async function verifyCustomDomain(userId: string, domain: string): Promis
     }
 
     // Update branding config
-    await pool.query(
+    await dbQuery(
       'UPDATE branding_configs SET custom_domain = $1, domain_verified = true, updated_at = NOW() WHERE user_id = $2',
       [domain, userId]
     );
@@ -376,7 +376,7 @@ export async function verifyCustomDomain(userId: string, domain: string): Promis
  */
 export async function toggleWhiteLabel(userId: string, enabled: boolean): Promise<BrandingConfig> {
   try {
-    const result = await pool.query(
+    const result = await dbQuery(
       `UPDATE branding_configs 
        SET white_label_enabled = $1, updated_at = NOW()
        WHERE user_id = $2
@@ -412,7 +412,7 @@ async function logBrandingChange(
     const brandingConfig = await getBrandingConfig(userId);
     if (!brandingConfig) return;
 
-    await pool.query(
+    await dbQuery(
       `INSERT INTO branding_audit_logs (branding_config_id, user_id, action, new_value, ip_address, user_agent)
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [brandingConfig.id, userId, action, JSON.stringify(newValue), ipAddress || null, userAgent || null]
@@ -427,7 +427,7 @@ async function logBrandingChange(
  */
 export async function getBrandingAuditLogs(userId: string, limit: number = 50): Promise<any[]> {
   try {
-    const result = await pool.query(
+    const result = await dbQuery(
       `SELECT * FROM branding_audit_logs 
        WHERE user_id = $1 
        ORDER BY created_at DESC 
