@@ -201,33 +201,56 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
 
       // Handle completion
       xhr.addEventListener('load', () => {
+        console.log('Upload response:', { status: xhr.status, response: xhr.responseText });
+        
         if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          setState(prev => ({
-            ...prev,
-            uploading: false,
-            success: true,
-            shareCode: response.shareCode,
-            fileName: response.fileName,
-            expiresAt: response.expiresAt,
-            progress: 100,
-          }));
+          try {
+            const response = JSON.parse(xhr.responseText);
+            console.log('Upload success:', response);
+            setState(prev => ({
+              ...prev,
+              uploading: false,
+              success: true,
+              shareCode: response.shareCode,
+              fileName: response.fileName,
+              expiresAt: response.expiresAt,
+              progress: 100,
+            }));
 
-          if (onUploadComplete) {
-            onUploadComplete(response.shareCode, response.fileName);
+            if (onUploadComplete) {
+              onUploadComplete(response.shareCode, response.fileName);
+            }
+          } catch (parseError) {
+            console.error('Failed to parse upload response:', parseError);
+            setState(prev => ({
+              ...prev,
+              uploading: false,
+              error: 'Invalid response from server. Please try again.',
+            }));
           }
         } else {
-          const response = JSON.parse(xhr.responseText);
-          setState(prev => ({
-            ...prev,
-            uploading: false,
-            error: response.error || 'Upload failed. Please try again.',
-          }));
+          try {
+            const response = JSON.parse(xhr.responseText);
+            console.error('Upload error:', response);
+            setState(prev => ({
+              ...prev,
+              uploading: false,
+              error: response.error || `Upload failed with status ${xhr.status}. Please try again.`,
+            }));
+          } catch (parseError) {
+            console.error('Failed to parse error response:', parseError);
+            setState(prev => ({
+              ...prev,
+              uploading: false,
+              error: `Upload failed with status ${xhr.status}. Please try again.`,
+            }));
+          }
         }
       });
 
       // Handle error
       xhr.addEventListener('error', () => {
+        console.error('Upload network error');
         setState(prev => ({
           ...prev,
           uploading: false,

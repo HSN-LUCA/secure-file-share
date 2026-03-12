@@ -58,9 +58,13 @@ const botDetectionMiddleware = createBotDetectionMiddleware({
  */
 export async function POST(request: NextRequest) {
   try {
+    console.log('[UPLOAD] Request received');
+    
     // Get client IP for analytics
     const clientIp = getClientIp(request);
     const userAgent = request.headers.get('user-agent') || 'unknown';
+    
+    console.log('[UPLOAD] Client IP:', clientIp);
 
     // Check bot detection first
     const botCheckResult = await botDetectionMiddleware.check(request);
@@ -94,6 +98,15 @@ export async function POST(request: NextRequest) {
     const storageDurationStr = formData.get('storage_duration') as string | null;
     const shareNumberStr = formData.get('share_number') as string | null;
     const captchaToken = formData.get('captcha_token') as string | null;
+
+    console.log('[UPLOAD] Form data parsed:', { 
+      hasFile: !!file, 
+      fileName: file?.name,
+      fileSize: file?.size,
+      storageDuration: storageDurationStr,
+      shareNumber: shareNumberStr,
+      hasCaptchaToken: !!captchaToken 
+    });
 
     // Validate required fields
     if (!file) {
@@ -140,6 +153,8 @@ export async function POST(request: NextRequest) {
     if (!captchaResult.success) {
       const errorMessage = getCaptchaErrorMessage(captchaResult.errorCodes);
       
+      console.log('[UPLOAD] CAPTCHA verification failed:', { errorCodes: captchaResult.errorCodes, score: captchaResult.score });
+      
       // Log CAPTCHA failure
       await createAnalytics({
         event_type: 'bot_detected',
@@ -156,6 +171,8 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+    
+    console.log('[UPLOAD] CAPTCHA verified successfully');
 
     // Get file data
     const fileBuffer = Buffer.from(await file.arrayBuffer());
@@ -343,7 +360,7 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
     } catch (storageError) {
-      console.error('Storage error:', storageError);
+      console.error('[UPLOAD] Storage error:', storageError);
 
       // Log storage error
       await createAnalytics({
@@ -364,7 +381,7 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('Upload endpoint error:', error);
+    console.error('[UPLOAD] Endpoint error:', error);
 
     return NextResponse.json(
       { 
