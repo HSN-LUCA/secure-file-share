@@ -477,6 +477,47 @@ export function validateEnum(
   return { valid: true };
 }
 
+/**
+ * Generic input validator that dispatches to specific validators based on type
+ * Supports: 'email', 'uuid', 'ip', 'shareCode', 'fileName', 'captchaToken', 'string', 'integer'
+ */
+export function validateInput(
+  value: unknown,
+  type: string
+): ValidationResult {
+  switch (type.toLowerCase()) {
+    case 'email':
+      return validateEmail(value);
+    case 'uuid':
+      // Basic UUID v4 validation (8-4-4-4-12 hex digits)
+      if (typeof value !== 'string') {
+        return { valid: false, error: 'UUID must be a string' };
+      }
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) {
+        return { valid: false, error: 'Invalid UUID format' };
+      }
+      return { valid: true };
+    case 'ip':
+    case 'ipaddress':
+      return validateIPAddress(value);
+    case 'sharecode':
+      return validateShareCode(value);
+    case 'filename':
+      return validateFileName(value);
+    case 'captchatoken':
+      return validateCaptchaToken(value);
+    case 'string':
+      return validateNonEmptyString(value);
+    case 'integer':
+      return validatePositiveInteger(value);
+    default:
+      return {
+        valid: false,
+        error: `Unknown validation type: ${type}`,
+      };
+  }
+}
+
 // ============================================================================
 // BATCH VALIDATION
 // ============================================================================
