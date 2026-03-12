@@ -120,3 +120,8 @@ export async function requireApiAuth(
     response: null,
   };
 }
+
+/**
+ * Alias for requireApiAuth for backward compatibility
+ */
+export const verifyAuth = requireApiAuth;
