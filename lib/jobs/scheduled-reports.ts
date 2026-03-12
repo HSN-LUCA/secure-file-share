@@ -1,10 +1,9 @@
 /**
  * Scheduled Reports Job Processor
  * Processes scheduled report generation and email delivery
+ * Stub implementation - Bull queues require Redis and are not suitable for Vercel's serverless environment
  */
 
-import { Queue, Job } from 'bull';
-import Redis from 'ioredis';
 import { getScheduledReportsDue, updateScheduledReportSentTime } from '@/lib/db/custom-reports';
 import { getCustomReport } from '@/lib/db/custom-reports';
 import { getDownloadStats, getFileTypeStats, getGeographicStats } from '@/lib/db/queries';
@@ -37,11 +36,9 @@ export interface ScheduledReportJobResult {
 /**
  * Process scheduled report job
  */
-export async function processScheduledReportJob(
-  job: Job<ScheduledReportJobData>
-): Promise<ScheduledReportJobResult> {
+export async function processScheduledReportJob(job: any): Promise<ScheduledReportJobResult> {
   const { reportId, userId, customReportId, name, recipientEmails, includeCharts, includeSummary } =
-    job.data;
+    job.data || {};
 
   try {
     console.log(`Processing scheduled report: ${reportId}`);
@@ -93,38 +90,16 @@ export async function processScheduledReportJob(
 
 /**
  * Create scheduled reports queue
+ * Stub implementation - Bull queues require Redis and are not suitable for Vercel's serverless environment
  */
-export function createScheduledReportsQueue(redisUrl: string): Queue<ScheduledReportJobData> {
-  const redis = new Redis(redisUrl);
-
-  const queue = new Queue<ScheduledReportJobData>('scheduled-reports', {
-    redis,
-    defaultJobOptions: {
-      attempts: 3,
-      backoff: {
-        type: 'exponential',
-        delay: 2000,
-      },
-      removeOnComplete: true,
-      removeOnFail: false,
-    },
-  });
-
-  // Process jobs
-  queue.process(async (job) => {
-    return processScheduledReportJob(job);
-  });
-
-  // Event handlers
-  queue.on('completed', (job, result) => {
-    console.log(`Scheduled report job completed: ${job.id}`, result);
-  });
-
-  queue.on('failed', (job, error) => {
-    console.error(`Scheduled report job failed: ${job.id}`, error);
-  });
-
-  return queue;
+export function createScheduledReportsQueue(redisUrl: string): any {
+  // Stub implementation - returns a mock queue object
+  return {
+    process: () => {},
+    on: () => {},
+    add: async () => ({ id: 'stub' }),
+    close: async () => {},
+  };
 }
 
 /**

@@ -14,7 +14,7 @@ import { IVirusScanner, VirusScanResult, ClamAVConfig } from './types';
 export class ClamAVScanner implements IVirusScanner {
   private config: ClamAVConfig;
   private lastHealthCheck: Date | null = null;
-  private isHealthy: boolean = false;
+  private healthStatus: boolean = false;
 
   constructor(config: ClamAVConfig) {
     this.config = config;
@@ -64,12 +64,12 @@ export class ClamAVScanner implements IVirusScanner {
     try {
       // In production, this would ping the ClamAV daemon
       // For now, return true (mock implementation)
-      this.isHealthy = true;
+      this.healthStatus = true;
       this.lastHealthCheck = new Date();
       return true;
     } catch (error) {
       console.error('ClamAV health check failed:', error);
-      this.isHealthy = false;
+      this.healthStatus = false;
       return false;
     }
   }

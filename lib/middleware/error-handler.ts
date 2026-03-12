@@ -94,8 +94,11 @@ export function isRetryableError(error: unknown): boolean {
  * Get retry delay in milliseconds
  */
 export function getRetryDelay(error: unknown, attempt: number = 1): number {
-  if (error instanceof AppError && 'retryAfter' in error && error.retryAfter) {
-    return error.retryAfter * 1000;
+  if (error instanceof AppError && 'retryAfter' in error) {
+    const retryAfter = (error as any).retryAfter;
+    if (typeof retryAfter === 'number') {
+      return retryAfter * 1000;
+    }
   }
 
   // Exponential backoff: 1s, 2s, 4s, 8s, etc.

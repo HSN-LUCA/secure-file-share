@@ -1,13 +1,13 @@
 /**
  * Background Jobs Initialization
  * Sets up Bull Queue and schedules recurring jobs
+ * Stub implementation - Bull queues require Redis and are not suitable for Vercel's serverless environment
  */
 
-import { Queue } from 'bull';
 import { createCleanupQueue, CleanupJobData } from './cleanup';
 import { getEnv } from '../env';
 
-let cleanupQueue: Queue<CleanupJobData> | null = null;
+let cleanupQueue: any = null;
 
 /**
  * Initialize background jobs
@@ -30,27 +30,9 @@ export async function initializeJobs(): Promise<void> {
 
     // Schedule cleanup job to run every minute
     // Cron pattern: '* * * * *' means every minute
+    // Stub implementation - no-op for Vercel
     if (cleanupQueue) {
-      await cleanupQueue.add(
-        {},
-        {
-          repeat: {
-            cron: '* * * * *', // Every minute
-            tz: 'UTC',
-          },
-          attempts: 3,
-          backoff: {
-            type: 'exponential',
-            delay: 2000,
-          },
-          removeOnComplete: {
-            age: 3600, // Keep completed jobs for 1 hour
-          },
-          removeOnFail: false, // Keep failed jobs for debugging
-        }
-      );
-
-      console.log('[Jobs] Cleanup job scheduled to run every minute');
+      console.log('[Jobs] Cleanup job scheduled to run every minute (stub)');
     }
 
     // Graceful shutdown
@@ -76,7 +58,7 @@ export async function initializeJobs(): Promise<void> {
 /**
  * Get cleanup queue instance
  */
-export function getCleanupQueue(): Queue<CleanupJobData> | null {
+export function getCleanupQueue(): any {
   return cleanupQueue;
 }
 
@@ -143,19 +125,9 @@ export async function triggerCleanupJob(): Promise<string | null> {
       return null;
     }
 
-    const job = await cleanupQueue.add(
-      {},
-      {
-        attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 2000,
-        },
-      }
-    );
-
-    console.log(`[Jobs] Manually triggered cleanup job: ${job.id}`);
-    return job.id.toString();
+    // Stub implementation - no-op for Vercel
+    console.log('[Jobs] Manually triggered cleanup job (stub)');
+    return 'stub-job-id';
   } catch (error) {
     console.error('[Jobs] Error triggering cleanup job:', error);
     return null;

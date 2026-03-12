@@ -153,7 +153,7 @@ async function logRateLimitEvent(
 ): Promise<void> {
   try {
     await createAnalytics({
-      event_type: 'rate_limit_exceeded',
+      event_type: 'security',
       ip_address: ip,
       metadata: {
         limitType,

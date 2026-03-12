@@ -15,7 +15,7 @@ import crypto from 'crypto';
 export class VirusTotalScanner implements IVirusScanner {
   private config: VirusTotalConfig;
   private lastHealthCheck: Date | null = null;
-  private isHealthy: boolean = false;
+  private healthStatus: boolean = false;
 
   constructor(config: VirusTotalConfig) {
     this.config = config;
@@ -76,20 +76,24 @@ export class VirusTotalScanner implements IVirusScanner {
    */
   async isHealthy(): Promise<boolean> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+
       const response = await fetch(`${this.config.apiUrl}/api/v3/domains/google.com`, {
         method: 'GET',
         headers: {
           'x-apikey': this.config.apiKey,
         },
-        timeout: this.config.timeout,
+        signal: controller.signal,
       });
 
-      this.isHealthy = response.ok;
+      clearTimeout(timeoutId);
+      this.healthStatus = response.ok;
       this.lastHealthCheck = new Date();
       return response.ok;
     } catch (error) {
       console.error('VirusTotal health check failed:', error);
-      this.isHealthy = false;
+      this.healthStatus = false;
       return false;
     }
   }
@@ -115,6 +119,9 @@ export class VirusTotalScanner implements IVirusScanner {
     fileHash: string
   ): Promise<{ isClean: boolean; threat?: string } | null> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+
       const response = await fetch(
         `${this.config.apiUrl}/api/v3/files/${fileHash}`,
         {
@@ -122,9 +129,11 @@ export class VirusTotalScanner implements IVirusScanner {
           headers: {
             'x-apikey': this.config.apiKey,
           },
-          timeout: this.config.timeout,
+          signal: controller.signal,
         }
       );
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -164,8 +173,11 @@ export class VirusTotalScanner implements IVirusScanner {
     fileName: string
   ): Promise<{ isClean: boolean; threat?: string }> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+
       const formData = new FormData();
-      const blob = new Blob([fileData], { type: 'application/octet-stream' });
+      const blob = new Blob([new Uint8Array(fileData)], { type: 'application/octet-stream' });
       formData.append('file', blob, fileName);
 
       const response = await fetch(`${this.config.apiUrl}/api/v3/files`, {
@@ -174,8 +186,10 @@ export class VirusTotalScanner implements IVirusScanner {
           'x-apikey': this.config.apiKey,
         },
         body: formData,
-        timeout: this.config.timeout,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`VirusTotal API error: ${response.status}`);

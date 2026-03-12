@@ -41,6 +41,9 @@ export async function sendWebhookEvent(
     const payloadString = JSON.stringify(payload);
     const signature = generateWebhookSignature(payloadString, secret);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -50,8 +53,10 @@ export async function sendWebhookEvent(
         'X-Webhook-Timestamp': payload.timestamp,
       },
       body: payloadString,
-      timeout: 10000, // 10 second timeout
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
