@@ -30,26 +30,28 @@ export async function initializeJobs(): Promise<void> {
 
     // Schedule cleanup job to run every minute
     // Cron pattern: '* * * * *' means every minute
-    await cleanupQueue.add(
-      {},
-      {
-        repeat: {
-          cron: '* * * * *', // Every minute
-          tz: 'UTC',
-        },
-        attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 2000,
-        },
-        removeOnComplete: {
-          age: 3600, // Keep completed jobs for 1 hour
-        },
-        removeOnFail: false, // Keep failed jobs for debugging
-      }
-    );
+    if (cleanupQueue) {
+      await cleanupQueue.add(
+        {},
+        {
+          repeat: {
+            cron: '* * * * *', // Every minute
+            tz: 'UTC',
+          },
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: {
+            age: 3600, // Keep completed jobs for 1 hour
+          },
+          removeOnFail: false, // Keep failed jobs for debugging
+        }
+      );
 
-    console.log('[Jobs] Cleanup job scheduled to run every minute');
+      console.log('[Jobs] Cleanup job scheduled to run every minute');
+    }
 
     // Graceful shutdown
     process.on('SIGTERM', async () => {
