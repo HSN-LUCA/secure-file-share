@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth/jwt';
+import { getUserFromRequest } from '@/lib/auth/middleware';
 import { getUserById, getEnterprisePlan, createEnterprisePlan, updateEnterprisePlan } from '@/lib/db/queries';
 import { validateInput } from '@/lib/validation/input-validation';
 

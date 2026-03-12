@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth/jwt';
+import { getUserFromRequest } from '@/lib/auth/middleware';
 import { createSupportTicket, getUserSupportTickets } from '@/lib/db/queries';
 import { validateInput } from '@/lib/validation/input-validation';
 import { sendSupportEmail } from '@/lib/email/support';
