@@ -3,7 +3,6 @@
  * Handles automatic deletion of expired files from S3 and database
  */
 
-import { Queue, Job } from 'bull';
 import { getExpiredFiles, deleteFile as deleteFileRecord } from '../db/queries';
 import { deleteFile as deleteFileFromS3 } from '../storage/utils';
 import { supabaseServer } from '../db/config';
@@ -27,7 +26,7 @@ export interface CleanupJobResult {
  * Process cleanup job
  * Deletes expired files from S3 and database
  */
-export async function processCleanupJob(job: Job<CleanupJobData>): Promise<CleanupJobResult> {
+export async function processCleanupJob(job: any): Promise<CleanupJobResult> {
   const startTime = new Date();
   const startTimestamp = Date.now();
 
@@ -168,37 +167,15 @@ export async function processCleanupJob(job: Job<CleanupJobData>): Promise<Clean
 
 /**
  * Create cleanup job queue
+ * Stub implementation - Bull queues require Redis and are not suitable for Vercel's serverless environment
+ * For production, use a dedicated job queue service or implement cleanup via scheduled functions
  */
-export function createCleanupQueue(redisUrl: string): Queue<CleanupJobData> {
-  const queue = new Queue<CleanupJobData>('file-cleanup', redisUrl, {
-    settings: {
-      // Retry failed jobs up to 3 times
-      retryProcessDelay: 5000,
-      maxStalledCount: 2,
-      lockDuration: 30000,
-      lockRenewTime: 15000,
-    },
-  });
-
-  // Process cleanup jobs
-  queue.process(async (job) => {
-    return processCleanupJob(job);
-  });
-
-  // Handle job completion
-  queue.on('completed', (job, result) => {
-    console.log(`[Cleanup Queue] Job ${job.id} completed:`, result);
-  });
-
-  // Handle job failure
-  queue.on('failed', (job, error) => {
-    console.error(`[Cleanup Queue] Job ${job.id} failed:`, error.message);
-  });
-
-  // Handle job error
-  queue.on('error', (error) => {
-    console.error('[Cleanup Queue] Queue error:', error);
-  });
-
-  return queue;
+export function createCleanupQueue(redisUrl: string): any {
+  // Stub implementation - returns a mock queue object
+  return {
+    process: () => {},
+    on: () => {},
+    add: async () => ({ id: 'stub' }),
+    close: async () => {},
+  };
 }
