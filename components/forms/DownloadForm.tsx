@@ -40,7 +40,7 @@ export function DownloadForm() {
 
   // Handle share code input change
   const handleShareCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '');
+    const value = e.target.value;
     setState(prev => ({
       ...prev,
       shareCode: value,

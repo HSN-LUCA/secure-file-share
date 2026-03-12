@@ -21,6 +21,7 @@ interface UploadState {
   fileName: string | null;
   expiresAt: string | null;
   expirationMinutes: number;
+  shareNumber: string;
 }
 
 export function UploadForm({ onUploadComplete }: UploadFormProps) {
@@ -35,6 +36,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
     fileName: null,
     expiresAt: null,
     expirationMinutes: 20,
+    shareNumber: '',
   });
 
   const [copied, setCopied] = useState(false);
@@ -182,6 +184,9 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       formData.append('file', state.file);
       formData.append('captcha_token', token);
       formData.append('expirationMinutes', state.expirationMinutes.toString());
+      if (state.shareNumber) {
+        formData.append('share_number', state.shareNumber);
+      }
 
       // Upload file
       const xhr = new XMLHttpRequest();
@@ -264,6 +269,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       fileName: null,
       expiresAt: null,
       expirationMinutes: 20,
+      shareNumber: '',
     });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -477,6 +483,26 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
           />
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
             File will be automatically deleted after this time (1-1440 minutes)
+          </p>
+        </div>
+      )}
+
+      {/* Share Number Input */}
+      {state.file && !state.uploading && (
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+            Share Number (Optional)
+          </label>
+          <input
+            type="text"
+            placeholder="Enter any number (e.g., 12345)"
+            value={state.shareNumber}
+            onChange={(e) => setState(prev => ({ ...prev, shareNumber: e.target.value }))}
+            className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+            aria-label="Enter optional share number"
+          />
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+            Leave empty to generate a random code. Enter any positive number to use as your share code.
           </p>
         </div>
       )}
