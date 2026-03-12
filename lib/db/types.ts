@@ -322,6 +322,8 @@ export interface ApiKeyUpdate {
   is_active?: boolean;
   last_used_at?: string;
   revoked_at?: string | null;
+  key_hash?: string;
+  key_prefix?: string;
   updated_at?: string;
 }
 

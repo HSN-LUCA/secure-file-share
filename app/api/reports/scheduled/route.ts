@@ -28,7 +28,7 @@ async function handleGet(request: AuthenticatedRequest): Promise<NextResponse> {
       );
     }
 
-    const result = await listScheduledReports(user.id);
+    const result = await listScheduledReports(user.userId);
 
     if (result.error) {
       console.error('List scheduled reports error:', result.error);
@@ -109,7 +109,7 @@ async function handlePost(request: AuthenticatedRequest): Promise<NextResponse> 
       isActive: body.isActive !== false,
     };
 
-    const result = await createScheduledReport(user.id, config);
+    const result = await createScheduledReport(user.userId, config);
 
     if (result.error) {
       console.error('Create scheduled report error:', result.error);

@@ -9,8 +9,8 @@ import { updateColorScheme, validateColor } from '@/lib/branding/branding-servic
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Invalid accent_color: ${accentValidation.error}` }, { status: 400 });
     }
 
-    const config = await updateColorScheme(auth.userId, primary_color, secondary_color, accent_color);
+    const config = await updateColorScheme(auth.context.userId, primary_color, secondary_color, accent_color);
 
     return NextResponse.json({
       config,

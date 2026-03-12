@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's API keys
-    const { data: keys, error } = await getUserApiKeys(authResult.user.id);
+    const { data: keys, error } = await getUserApiKeys(authResult.user.userId);
     if (error) {
       throw error;
     }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     // Create API key in database
     const { data: apiKey, error: createError } = await createApiKey({
-      user_id: authResult.user.id,
+      user_id: authResult.user.userId,
       name: name.trim(),
       key_hash: hash,
       key_prefix: prefix,

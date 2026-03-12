@@ -9,11 +9,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const deletions = await getUserDataDeletions(auth.userId);
+    const deletions = await getUserDataDeletions(auth.context.userId);
     return NextResponse.json({ deletions });
   } catch (error) {
     console.error('Error fetching data deletions:', error);
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid deletion type' }, { status: 400 });
     }
 
-    const deletionRequest = await requestDataDeletion(auth.userId, deletionType, reason);
+    const deletionRequest = await requestDataDeletion(auth.context.userId, deletionType, reason);
 
     return NextResponse.json(
       {

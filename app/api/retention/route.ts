@@ -14,11 +14,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const policies = await getUserRetentionPolicies(auth.userId);
+    const policies = await getUserRetentionPolicies(auth.context.userId);
     const statistics = await getRetentionStatistics();
 
     return NextResponse.json({
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid retention days' }, { status: 400 });
     }
 
-    const policy = await setRetentionPolicy(auth.userId, dataType, retentionDays, autoDelete);
+    const policy = await setRetentionPolicy(auth.context.userId, dataType, retentionDays, autoDelete);
 
     return NextResponse.json(
       { message: 'Retention policy updated', policy },

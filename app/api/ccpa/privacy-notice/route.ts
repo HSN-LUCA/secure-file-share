@@ -9,11 +9,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const noticeStatus = await getUserCcpaNoticeStatus(auth.userId);
+    const noticeStatus = await getUserCcpaNoticeStatus(auth.context.userId);
 
     return NextResponse.json({
       noticeStatus,
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
     const userAgent = request.headers.get('user-agent');
 
-    await acknowledgeCcpaNotice(auth.userId, noticeVersion, ipAddress || undefined, userAgent || undefined);
+    await acknowledgeCcpaNotice(auth.context.userId, noticeVersion, ipAddress || undefined, userAgent || undefined);
 
     return NextResponse.json(
       { message: 'CCPA privacy notice acknowledged' },

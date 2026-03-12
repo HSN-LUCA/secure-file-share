@@ -114,7 +114,7 @@ export default function Home() {
               className="absolute inset-0 w-full h-full"
               viewBox="0 0 200 200"
               animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' as const }}
             >
               <defs>
                 <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">

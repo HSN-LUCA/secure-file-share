@@ -37,7 +37,7 @@ export async function GET(
     }
 
     // Verify ownership
-    if (apiKey.user_id !== authResult.user.id) {
+    if (apiKey.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }

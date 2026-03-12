@@ -28,7 +28,7 @@ async function handleGet(request: AuthenticatedRequest): Promise<NextResponse> {
       );
     }
 
-    const result = await listCustomReports(user.id);
+    const result = await listCustomReports(user.userId);
 
     if (result.error) {
       console.error('List custom reports error:', result.error);
@@ -90,7 +90,7 @@ async function handlePost(request: AuthenticatedRequest): Promise<NextResponse> 
       isPublic: body.isPublic || false,
     };
 
-    const result = await createCustomReport(user.id, config);
+    const result = await createCustomReport(user.userId, config);
 
     if (result.error) {
       console.error('Create custom report error:', result.error);

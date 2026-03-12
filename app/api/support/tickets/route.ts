@@ -13,8 +13,8 @@ import {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json(
+    if (!auth.context) {
+      return auth.response || NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     const ticket = await createTicket(
-      auth.userId,
+      auth.context.userId,
       subject,
       description,
       category,
@@ -98,8 +98,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json(
+    if (!auth.context) {
+      return auth.response || NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
@@ -110,18 +110,13 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
     const offset = (page - 1) * limit;
     const searchQuery = searchParams.get('search');
-    const isAdmin = auth.role === 'admin';
 
     let result;
 
     if (searchQuery) {
-      result = await searchTickets(searchQuery, isAdmin ? undefined : auth.userId, limit, offset);
-    } else if (isAdmin) {
-      const status = searchParams.get('status');
-      const priority = searchParams.get('priority');
-      result = await getAllTickets(status || undefined, priority || undefined, limit, offset);
+      result = await searchTickets(searchQuery, auth.context.userId, limit, offset);
     } else {
-      result = await getUserTickets(auth.userId, limit, offset);
+      result = await getUserTickets(auth.context.userId, limit, offset);
     }
 
     return NextResponse.json({

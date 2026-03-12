@@ -45,7 +45,7 @@ async function handleGet(
     }
 
     // Verify user owns the report
-    if (result.data.userId !== user.id) {
+    if (result.data.userId !== user.userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 403 }
@@ -95,7 +95,7 @@ async function handlePut(
       );
     }
 
-    if (reportResult.data.userId !== user.id) {
+    if (reportResult.data.userId !== user.userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 403 }
@@ -171,7 +171,7 @@ async function handleDelete(
       );
     }
 
-    if (reportResult.data.userId !== user.id) {
+    if (reportResult.data.userId !== user.userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 403 }

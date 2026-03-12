@@ -39,7 +39,7 @@ export async function GET(
     }
 
     // Verify ownership
-    if (apiKey.user_id !== authResult.user.id) {
+    if (apiKey.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -115,7 +115,7 @@ export async function PATCH(
     }
 
     // Verify ownership
-    if (apiKey.user_id !== authResult.user.id) {
+    if (apiKey.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
@@ -256,7 +256,7 @@ export async function DELETE(
     }
 
     // Verify ownership
-    if (apiKey.user_id !== authResult.user.id) {
+    if (apiKey.user_id !== authResult.user.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }

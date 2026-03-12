@@ -9,8 +9,8 @@ import { generateDomainVerification, verifyCustomDomain } from '@/lib/branding/b
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing domain parameter' }, { status: 400 });
     }
 
-    const verification = await generateDomainVerification(auth.userId, domain);
+    const verification = await generateDomainVerification(auth.context.userId, domain);
 
     return NextResponse.json({
       domain,
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Missing domain parameter' }, { status: 400 });
     }
 
-    const verified = await verifyCustomDomain(auth.userId, domain);
+    const verified = await verifyCustomDomain(auth.context.userId, domain);
 
     if (!verified) {
       return NextResponse.json(

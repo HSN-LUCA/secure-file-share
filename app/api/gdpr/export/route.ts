@@ -9,11 +9,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const exports = await getUserDataExports(auth.userId);
+    const exports = await getUserDataExports(auth.context.userId);
     return NextResponse.json({ exports });
   } catch (error) {
     console.error('Error fetching data exports:', error);
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid export format' }, { status: 400 });
     }
 
-    const exportRequest = await requestDataExport(auth.userId, exportFormat);
+    const exportRequest = await requestDataExport(auth.context.userId, exportFormat);
 
     return NextResponse.json(
       { message: 'Data export requested', exportRequest },

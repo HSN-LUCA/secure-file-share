@@ -11,8 +11,8 @@ const MAX_LOGO_SIZE = 5 * 1024 * 1024; // 5MB
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = await file.arrayBuffer();
-    const result = await uploadLogo(auth.userId, Buffer.from(buffer), file.name, file.type);
+    const result = await uploadLogo(auth.context.userId, Buffer.from(buffer), file.name, file.type);
 
     return NextResponse.json(result);
   } catch (error) {
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -67,7 +67,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Missing s3_key parameter' }, { status: 400 });
     }
 
-    await deleteLogo(auth.userId, s3Key);
+    await deleteLogo(auth.context.userId, s3Key);
 
     return NextResponse.json({ success: true });
   } catch (error) {

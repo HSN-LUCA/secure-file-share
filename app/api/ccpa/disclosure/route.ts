@@ -15,11 +15,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const requests = await getUserCcpaRequests(auth.userId);
+    const requests = await getUserCcpaRequests(auth.context.userId);
     return NextResponse.json({ requests });
   } catch (error) {
     console.error('Error fetching CCPA requests:', error);
@@ -34,8 +34,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid verification method' }, { status: 400 });
     }
 
-    const disclosureRequest = await requestCcpaDisclosure(auth.userId, requestType, verificationMethod);
+    const disclosureRequest = await requestCcpaDisclosure(auth.context.userId, requestType, verificationMethod);
 
     return NextResponse.json(
       {

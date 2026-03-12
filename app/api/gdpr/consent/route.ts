@@ -9,11 +9,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const consents = await getUserConsents(auth.userId);
+    const consents = await getUserConsents(auth.context.userId);
     return NextResponse.json({ consents });
   } catch (error) {
     console.error('Error fetching consents:', error);
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
     const userAgent = request.headers.get('user-agent');
 
-    const consent = await recordUserConsent(auth.userId, consentType, given, ipAddress || undefined, userAgent || undefined);
+    const consent = await recordUserConsent(auth.context.userId, consentType, given, ipAddress || undefined, userAgent || undefined);
 
     return NextResponse.json({ consent }, { status: 201 });
   } catch (error) {
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -69,7 +69,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
-    const consent = await withdrawUserConsent(auth.userId, consentType);
+    const consent = await withdrawUserConsent(auth.context.userId, consentType);
 
     return NextResponse.json({ consent });
   } catch (error) {

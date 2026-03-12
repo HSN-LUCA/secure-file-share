@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
         userPlan = userResult.data.plan;
         
         // Check if subscription has expired
-        if (userResult.data.subscriptionExpiresAt && new Date(userResult.data.subscriptionExpiresAt) < new Date()) {
+        if (userResult.data.subscription_expires_at && new Date(userResult.data.subscription_expires_at) < new Date()) {
           userPlan = 'free';
         }
       }
@@ -314,7 +314,6 @@ export async function POST(request: NextRequest) {
         is_safe: null,
         encryption_iv: encryptionData.iv,
         encryption_auth_tag: encryptionData.authTag,
-        share_number: shareNumber,
       });
 
       if (fileRecord.error) {

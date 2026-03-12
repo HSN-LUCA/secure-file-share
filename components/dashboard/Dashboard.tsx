@@ -246,7 +246,7 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <Alert type="error" title="Error" message={error} />
+        <Alert type="error" title="Error">{error}</Alert>
       </div>
     );
   }
@@ -254,7 +254,7 @@ export default function Dashboard() {
   if (!data) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <Alert type="error" title="Error" message="Failed to load dashboard data" />
+        <Alert type="error" title="Error">Failed to load dashboard data</Alert>
       </div>
     );
   }

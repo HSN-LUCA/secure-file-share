@@ -9,11 +9,11 @@ import { getBrandingConfig, upsertBrandingConfig } from '@/lib/branding/branding
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const config = await getBrandingConfig(auth.userId);
+    const config = await getBrandingConfig(auth.context.userId);
 
     if (!config) {
       return NextResponse.json({ error: 'Branding config not found' }, { status: 404 });
@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid support_email' }, { status: 400 });
     }
 
-    const config = await upsertBrandingConfig(auth.userId, {
+    const config = await upsertBrandingConfig(auth.context.userId, {
       company_name,
       company_description,
       support_email,

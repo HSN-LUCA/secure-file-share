@@ -118,14 +118,18 @@ async function handleGet(request: AuthenticatedRequest): Promise<NextResponse<Ad
     // CHECK CACHE
     // ========================================================================
 
-    const cacheKey = getCacheKey(user.id, reportRequest);
+    const cacheKey = getCacheKey(user.userId, reportRequest);
     const cachedReport = getCachedReport(cacheKey);
 
     if (cachedReport) {
       return NextResponse.json({
         success: true,
         data: {
-          ...cachedReport,
+          summary: cachedReport.summary,
+          metrics: cachedReport.metrics,
+          dimensions: cachedReport.dimensions,
+          aggregations: cachedReport.aggregations,
+          generatedAt: cachedReport.generatedAt,
           cacheKey,
         },
       });
@@ -144,7 +148,7 @@ async function handleGet(request: AuthenticatedRequest): Promise<NextResponse<Ad
     };
 
     // Fetch user behavior summary
-    const behaviorResult = await getUserBehaviorSummary(user.id, fromDate, toDate);
+    const behaviorResult = await getUserBehaviorSummary(user.userId, fromDate || undefined, toDate || undefined);
     if (behaviorResult.data) {
       reportData.summary.behavior = behaviorResult.data;
     }
@@ -152,27 +156,27 @@ async function handleGet(request: AuthenticatedRequest): Promise<NextResponse<Ad
     // Fetch metrics
     for (const metric of metrics) {
       if (metric === 'downloads') {
-        const result = await getDownloadStats(fromDate, toDate);
+        const result = await getDownloadStats(fromDate || undefined, toDate || undefined);
         if (result.data) {
           reportData.metrics.downloads = result.data;
         }
       } else if (metric === 'fileTypes') {
-        const result = await getFileTypeStats(fromDate, toDate);
+        const result = await getFileTypeStats(fromDate || undefined, toDate || undefined);
         if (result.data) {
           reportData.metrics.fileTypes = result.data;
         }
       } else if (metric === 'geographic') {
-        const result = await getGeographicStats(fromDate, toDate);
+        const result = await getGeographicStats(fromDate || undefined, toDate || undefined);
         if (result.data) {
           reportData.metrics.geographic = result.data;
         }
       } else if (metric === 'botDetection') {
-        const result = await getBotDetectionMetrics(fromDate, toDate);
+        const result = await getBotDetectionMetrics(fromDate || undefined, toDate || undefined);
         if (result.data) {
           reportData.metrics.botDetection = result.data;
         }
       } else if (metric === 'flows') {
-        const result = await getFlowCompletionRates(fromDate, toDate);
+        const result = await getFlowCompletionRates(fromDate || undefined, toDate || undefined);
         if (result.data) {
           reportData.metrics.flows = result.data;
         }
@@ -198,7 +202,11 @@ async function handleGet(request: AuthenticatedRequest): Promise<NextResponse<Ad
     return NextResponse.json({
       success: true,
       data: {
-        ...reportData,
+        summary: reportData.summary,
+        metrics: reportData.metrics,
+        dimensions: reportData.dimensions,
+        aggregations: reportData.aggregations,
+        generatedAt: reportData.generatedAt,
         cacheKey,
       },
     });

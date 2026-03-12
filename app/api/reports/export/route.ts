@@ -65,7 +65,7 @@ async function handlePost(request: AuthenticatedRequest): Promise<NextResponse> 
     const report = reportResult.data;
 
     // Verify user owns the report
-    if (report.userId !== user.id) {
+    if (report.userId !== user.userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 403 }
@@ -75,7 +75,7 @@ async function handlePost(request: AuthenticatedRequest): Promise<NextResponse> 
     // Create export record
     const fileName = `report-${report.name}-${new Date().toISOString().split('T')[0]}.${body.exportFormat}`;
     const exportResult = await createReportExport(
-      user.id,
+      user.userId,
       body.customReportId,
       body.exportFormat,
       fileName
@@ -90,6 +90,13 @@ async function handlePost(request: AuthenticatedRequest): Promise<NextResponse> 
     }
 
     const exportId = exportResult.data?.exportId;
+
+    if (!exportId) {
+      return NextResponse.json(
+        { success: false, error: 'Failed to create export record' },
+        { status: 500 }
+      );
+    }
 
     // Generate report data based on metrics and dimensions
     const reportData = await generateReportData(report);

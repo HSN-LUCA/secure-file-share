@@ -9,11 +9,11 @@ import { verifyAuth } from '@/lib/middleware/api-auth';
 export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const optOuts = await getUserOptOuts(auth.userId);
+    const optOuts = await getUserOptOuts(auth.context.userId);
     return NextResponse.json({ optOuts });
   } catch (error) {
     console.error('Error fetching opt-outs:', error);
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
     const userAgent = request.headers.get('user-agent');
 
-    const optOut = await recordUserOptOut(auth.userId, optOutType, ipAddress || undefined, userAgent || undefined);
+    const optOut = await recordUserOptOut(auth.context.userId, optOutType, ipAddress || undefined, userAgent || undefined);
 
     return NextResponse.json(
       { message: 'Opt-out recorded successfully', optOut },
@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
-    if (!auth) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth.context) {
+      return auth.response || NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid opt-out type' }, { status: 400 });
     }
 
-    const optOut = await optInUser(auth.userId, optOutType);
+    const optOut = await optInUser(auth.context.userId, optOutType);
 
     return NextResponse.json({ message: 'Opted in successfully', optOut });
   } catch (error) {
