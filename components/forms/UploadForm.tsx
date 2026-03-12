@@ -468,9 +468,9 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
 
       {/* Expiration Time Input */}
       {state.file && !state.uploading && (
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            File Expiration (minutes)
+        <div className="mb-5">
+          <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
+            Expiration Time
           </label>
           <input
             type="number"
@@ -478,32 +478,26 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
             max="1440"
             value={state.expirationMinutes}
             onChange={(e) => setState(prev => ({ ...prev, expirationMinutes: Math.max(1, parseInt(e.target.value) || 1) }))}
-            className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-neutral-700 dark:text-white bg-white text-neutral-900 transition-all"
             aria-label="Set file expiration time in minutes"
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-            File will be automatically deleted after this time (1-1440 minutes)
-          </p>
         </div>
       )}
 
       {/* Share Number Input */}
       {state.file && !state.uploading && (
         <div className="mb-6">
-          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+          <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
             Share Number (Optional)
           </label>
           <input
             type="text"
-            placeholder="Enter any number (e.g., 12345)"
+            placeholder="e.g., 12345"
             value={state.shareNumber}
             onChange={(e) => setState(prev => ({ ...prev, shareNumber: e.target.value }))}
-            className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-neutral-700 dark:text-white bg-white text-neutral-900 transition-all"
             aria-label="Enter optional share number"
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-            Leave empty to generate a random code. Enter any positive number to use as your share code.
-          </p>
         </div>
       )}
 
@@ -511,7 +505,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       <Button
         onClick={handleUpload}
         disabled={!state.file || state.uploading}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-neutral-600 text-white flex items-center justify-center gap-2 py-3 sm:py-2"
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 dark:disabled:from-neutral-600 dark:disabled:to-neutral-600 text-white font-semibold flex items-center justify-center gap-2 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
         aria-label={state.uploading ? 'Uploading file' : 'Upload file'}
       >
         {state.uploading ? (

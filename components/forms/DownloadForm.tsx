@@ -284,7 +284,7 @@ export function DownloadForm() {
         <Button
           onClick={handleDownload}
           disabled={state.downloading}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-neutral-600 text-white flex items-center justify-center gap-2 mb-3 py-3 sm:py-2"
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 dark:disabled:from-neutral-600 dark:disabled:to-neutral-600 text-white font-semibold flex items-center justify-center gap-2 mb-3 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
           aria-label={state.downloading ? 'Downloading file' : 'Download file'}
         >
           {state.downloading ? (
@@ -305,7 +305,7 @@ export function DownloadForm() {
         {/* Back Button */}
         <Button
           onClick={handleReset}
-          className="w-full bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white"
+          className="w-full bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-semibold rounded-xl transition-all duration-200"
         >
           Back
         </Button>
@@ -327,30 +327,27 @@ export function DownloadForm() {
 
       {/* Share Code Input */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+        <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
           Share Code
         </label>
         <input
           ref={fileInputRef}
           type="text"
           inputMode="numeric"
-          placeholder="Enter share code"
+          placeholder="Enter your share code"
           value={state.shareCode}
           onChange={handleShareCodeChange}
           disabled={state.loading}
-          className="w-full px-4 py-3 text-center text-2xl font-mono font-bold border-2 border-neutral-300 dark:border-neutral-600 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 disabled:bg-neutral-100 dark:disabled:bg-neutral-700 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
+          className="w-full px-4 py-3 text-center text-xl font-mono font-bold border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 disabled:bg-neutral-100 dark:disabled:bg-neutral-700 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white transition-all"
           aria-label="Enter share code"
         />
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center mt-2">
-          Enter the share code you received
-        </p>
       </div>
 
       {/* Fetch Button */}
       <Button
         onClick={handleFetchFileInfo}
         disabled={!state.shareCode || state.loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:bg-neutral-600 text-white flex items-center justify-center gap-2 py-3 sm:py-2"
+        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 dark:disabled:from-neutral-600 dark:disabled:to-neutral-600 text-white font-semibold flex items-center justify-center gap-2 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
         aria-label={state.loading ? 'Loading file info' : 'Get file info'}
       >
         {state.loading ? (
@@ -367,11 +364,6 @@ export function DownloadForm() {
           </>
         )}
       </Button>
-
-      {/* Info */}
-      <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center mt-4">
-        Your download will be secure and encrypted
-      </p>
     </div>
   );
 }
