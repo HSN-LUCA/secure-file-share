@@ -133,9 +133,9 @@ export async function POST(request: NextRequest) {
     let shareNumber: number | null = null;
     if (shareNumberStr) {
       const parsed = parseInt(shareNumberStr, 10);
-      if (isNaN(parsed) || parsed < 1000 || parsed > 99999999) {
+      if (isNaN(parsed) || parsed < 1) {
         return NextResponse.json(
-          { success: false, error: 'Share number must be between 1000 and 99999999' },
+          { success: false, error: 'Share number must be a positive number' },
           { status: 400 }
         );
       }
