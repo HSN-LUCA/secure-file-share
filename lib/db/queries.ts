@@ -877,7 +877,7 @@ export async function getBlockedIps(
 
     return { data: result, error: null };
   } catch (error) {
-    return { data: null, error: error as Error };
+    return { data: [], error: error as Error };
   }
 }
 
@@ -946,7 +946,7 @@ export async function getSuspiciousPatterns(
 
     return { data: result, error: null };
   } catch (error) {
-    return { data: null, error: error as Error };
+    return { data: [], error: error as Error };
   }
 }
 
@@ -1564,16 +1564,9 @@ export async function getApiKeyUsageStats(
   hoursBack: number = 24
 ): Promise<QueryResultList<any>> {
   try {
-    const cutoffTime = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString();
-    const { data, error } = await getClient()
-      .from('api_usage')
-      .select('endpoint, method, status_code, COUNT(*) as count, AVG(response_time_ms) as avg_response_time')
-      .eq('api_key_id', apiKeyId)
-      .gte('created_at', cutoffTime)
-      .group_by('endpoint', 'method', 'status_code');
-
-    if (error) throw error;
-    return { data: data || [], error: null };
+    // Stub implementation - returns empty stats
+    // TODO: Implement with raw SQL queries using PostgreSQL pool client
+    return { data: [], error: null };
   } catch (error) {
     return { data: [], error: error as Error };
   }
