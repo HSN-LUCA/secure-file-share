@@ -295,6 +295,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Validate storage duration
+    if (storageDurationMinutes < 1) {
+      storageDurationMinutes = planLimits.storageDurationMinutes;
+    }
+
     // Generate unique file ID
     const fileId = uuidv4();
 
@@ -303,6 +308,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Upload file to storage with encryption
+      console.log('[UPLOAD] Starting S3 upload for file:', fileId);
       const { key: s3Key, encryptionData } = await uploadFile(
         fileId,
         fileBuffer,
@@ -315,36 +321,45 @@ export async function POST(request: NextRequest) {
           },
         }
       );
+      console.log('[UPLOAD] S3 upload completed, S3 key:', s3Key);
 
-      // Store file metadata in database
-      const fileRecord = await createFile({
-        id: fileId,
-        share_code: shareCode,
-        user_id: userId,
-        file_name: fileName,
-        file_size: fileSize,
-        file_type: mimeType,
-        s3_key: s3Key,
-        expires_at: expiresAt.toISOString(),
-        storage_duration_minutes: storageDurationMinutes,
-        ip_address: clientIp,
-        user_agent: userAgent,
-        is_scanned: false,
-        is_safe: null,
-        encryption_iv: encryptionData.iv,
-        encryption_auth_tag: encryptionData.authTag,
-      });
+      // Store file metadata in database with timeout
+      console.log('[UPLOAD] Storing file metadata in database');
+      const fileRecord = await Promise.race([
+        createFile({
+          id: fileId,
+          share_code: shareCode,
+          user_id: userId,
+          file_name: fileName,
+          file_size: fileSize,
+          file_type: mimeType,
+          s3_key: s3Key,
+          expires_at: expiresAt.toISOString(),
+          storage_duration_minutes: storageDurationMinutes,
+          ip_address: clientIp,
+          user_agent: userAgent,
+          is_scanned: false,
+          is_safe: null,
+          encryption_iv: encryptionData.iv,
+          encryption_auth_tag: encryptionData.authTag,
+        }),
+        new Promise<any>((_, reject) =>
+          setTimeout(() => reject(new Error('Database operation timeout')), 10000)
+        ),
+      ]) as any;
 
-      if (fileRecord.error) {
-        console.error('Failed to create file record:', fileRecord.error);
+      if (fileRecord?.error) {
+        console.error('[UPLOAD] Failed to create file record:', fileRecord.error);
         return NextResponse.json(
           { success: false, error: 'Failed to store file metadata' },
           { status: 500 }
         );
       }
 
-      // Log successful upload
-      await createAnalytics({
+      console.log('[UPLOAD] File metadata stored successfully');
+
+      // Log successful upload (non-blocking)
+      createAnalytics({
         event_type: 'upload',
         file_id: fileId,
         user_id: userId,
@@ -355,8 +370,9 @@ export async function POST(request: NextRequest) {
           shareCode,
           plan: userPlan,
         },
-      }).catch(err => console.error('Failed to log analytics:', err));
+      }).catch(err => console.error('[UPLOAD] Failed to log analytics:', err));
 
+      console.log('[UPLOAD] Returning success response with share code:', shareCode);
       // Return success response
       return NextResponse.json(
         {
@@ -370,20 +386,20 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
     } catch (storageError) {
-      console.error('[UPLOAD] Storage error:', storageError);
+      console.error('[UPLOAD] Storage/Database error:', storageError);
 
-      // Log storage error
-      await createAnalytics({
+      // Log storage error (non-blocking)
+      createAnalytics({
         event_type: 'upload',
         file_id: undefined,
         user_id: userId,
         ip_address: clientIp,
         metadata: {
-          error: 'Storage error',
+          error: 'Storage error: ' + (storageError instanceof Error ? storageError.message : String(storageError)),
           fileName,
           fileSize,
         },
-      }).catch(err => console.error('Failed to log analytics:', err));
+      }).catch(err => console.error('[UPLOAD] Failed to log analytics:', err));
 
       return NextResponse.json(
         { success: false, error: 'Failed to upload file' },
