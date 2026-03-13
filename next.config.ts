@@ -11,11 +11,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn.jsdelivr.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn.jsdelivr.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https:",
-              "connect-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
+              "connect-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://*.supabase.co https://s3.amazonaws.com https://*.s3.amazonaws.com",
               "frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/",
               "object-src 'none'",
               "base-uri 'self'",
