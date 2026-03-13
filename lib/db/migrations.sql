@@ -26,7 +26,7 @@ CREATE INDEX IF NOT EXISTS idx_users_is_active ON users(is_active);
 -- Stores file metadata and tracking information
 CREATE TABLE IF NOT EXISTS files (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  share_code VARCHAR(20) UNIQUE NOT NULL,
+  share_code VARCHAR(20) NOT NULL,
   user_id UUID REFERENCES users(id) ON DELETE SET NULL,
   file_name VARCHAR(255) NOT NULL,
   file_size BIGINT NOT NULL,
@@ -171,7 +171,7 @@ COMMENT ON TABLE analytics IS 'Tracks system events (uploads, downloads, securit
 COMMENT ON COLUMN users.plan IS 'User subscription plan: free, paid, or enterprise';
 COMMENT ON COLUMN users.subscription_expires_at IS 'When the paid subscription expires (NULL for free users)';
 
-COMMENT ON COLUMN files.share_code IS 'Unique numeric code for sharing the file';
+COMMENT ON COLUMN files.share_code IS 'Numeric code for sharing the file — multiple files can share the same code (group upload)';
 COMMENT ON COLUMN files.s3_key IS 'Path to the file in S3/R2 object storage';
 COMMENT ON COLUMN files.expires_at IS 'When the file will be automatically deleted';
 COMMENT ON COLUMN files.is_scanned IS 'Whether the file has been scanned for malware';
