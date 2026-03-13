@@ -75,19 +75,12 @@ export async function verifyCaptchaToken(
       };
     }
 
-    // Verify token with Google reCAPTCHA Enterprise API
-    const projectId = process.env.RECAPTCHA_PROJECT_ID || 'secure-file-share';
-    const siteKey = env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    const response = await fetch(
-      `https://recaptchaenterprise.googleapis.com/v1/projects/${projectId}/assessments?key=${secretKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: { token, siteKey, expectedAction: expectedAction },
-        }),
-      }
-    );
+    // Verify token with Google reCAPTCHA siteverify API (works for v3 and Enterprise)
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${secretKey}&response=${token}`,
+    });
 
     if (!response.ok) {
       console.error('reCAPTCHA API error:', response.statusText);
@@ -99,19 +92,18 @@ export async function verifyCaptchaToken(
 
     const data = await response.json();
 
-    // Enterprise API returns { tokenProperties, riskAnalysis, event }
-    const tokenProps = data.tokenProperties;
-    if (!tokenProps?.valid) {
+    // Standard siteverify response: { success, score, action, challenge_ts, hostname, error-codes }
+    if (!data.success) {
       return {
         success: false,
-        errorCodes: [tokenProps?.invalidReason || 'VERIFICATION_FAILED'],
+        errorCodes: data['error-codes'] || ['VERIFICATION_FAILED'],
       };
     }
 
-    const score: number = data.riskAnalysis?.score ?? 1.0;
+    const score: number = data.score ?? 1.0;
 
-    if (data.event?.expectedAction) {
-      console.debug(`CAPTCHA action: ${data.event.expectedAction}`);
+    if (data.action) {
+      console.debug(`CAPTCHA action: ${data.action}`);
     }
 
     // Check score threshold
@@ -120,7 +112,7 @@ export async function verifyCaptchaToken(
       return {
         success: false,
         score,
-        action: tokenProps.action,
+        action: data.action,
         errorCodes: ['SCORE_TOO_LOW'],
       };
     }
@@ -128,9 +120,9 @@ export async function verifyCaptchaToken(
     return {
       success: true,
       score,
-      action: tokenProps.action,
-      challengeTs: tokenProps.createTime,
-      hostname: tokenProps.hostname,
+      action: data.action,
+      challengeTs: data.challenge_ts,
+      hostname: data.hostname,
     };
   } catch (error) {
     console.error('CAPTCHA verification error:', error);

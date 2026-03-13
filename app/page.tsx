@@ -31,14 +31,14 @@ export default function Home() {
     setUploading(true);
     setUploadError('');
     try {
-      // Get reCAPTCHA token
+      // Get reCAPTCHA Enterprise token
       let captchaToken = '';
       try {
-        // Wait up to 5 seconds for grecaptcha to be available
+        // Wait up to 5 seconds for grecaptcha.enterprise to be available
         const grecaptcha = await new Promise<any>((resolve) => {
           const start = Date.now();
           const check = () => {
-            const g = (window as any).grecaptcha;
+            const g = (window as any).grecaptcha?.enterprise;
             if (g?.ready) return resolve(g);
             if (Date.now() - start > 5000) return resolve(null);
             setTimeout(check, 100);
@@ -47,13 +47,11 @@ export default function Home() {
         });
 
         if (grecaptcha) {
+          const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!;
           captchaToken = await new Promise<string>((resolve, reject) => {
             grecaptcha.ready(async () => {
               try {
-                const token = await grecaptcha.execute(
-                  process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-                  { action: 'upload' }
-                );
+                const token = await grecaptcha.execute(siteKey, { action: 'upload' });
                 resolve(token);
               } catch (e) {
                 reject(e);
