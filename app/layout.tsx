@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -40,14 +41,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* reCAPTCHA v3 - Only load in production */}
-        {process.env.NODE_ENV === 'production' && (
-          <script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-            async
-            defer
-          ></script>
-        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100`}
@@ -64,6 +57,11 @@ export default function RootLayout({
           <InstallPrompt />
           <OfflineIndicator />
         </LenisWrapper>
+        {/* reCAPTCHA v3 - loaded via next/script to avoid querySelector selector issues */}
+        <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
