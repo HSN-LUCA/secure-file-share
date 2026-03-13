@@ -121,7 +121,7 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = public;
 
 -- Trigger to automatically update updated_at on users table
 DROP TRIGGER IF EXISTS update_users_updated_at ON users;
