@@ -290,8 +290,11 @@ export async function POST(request: NextRequest) {
     // Generate unique file ID
     const fileId = uuidv4();
 
-    // Calculate expiration time
-    const expiresAt = new Date(Date.now() + storageDurationMinutes * 60 * 1000);
+    // Calculate expiration time (always in UTC)
+    const nowMs = Date.now();
+    const expiresAt = new Date(nowMs + storageDurationMinutes * 60 * 1000);
+    // Store as UTC ISO string - always ends with 'Z' to be unambiguous
+    const expiresAtISO = expiresAt.toISOString();
 
     try {
       // Upload file to storage with encryption
@@ -321,7 +324,7 @@ export async function POST(request: NextRequest) {
           file_size: fileSize,
           file_type: mimeType,
           s3_key: s3Key,
-          expires_at: expiresAt.toISOString(),
+          expires_at: expiresAtISO,
           storage_duration_minutes: storageDurationMinutes,
           ip_address: clientIp,
           user_agent: userAgent,
@@ -365,7 +368,7 @@ export async function POST(request: NextRequest) {
         {
           success: true,
           shareCode,
-          expiresAt: expiresAt.toISOString(),
+          expiresAt: expiresAtISO,
           fileName,
           fileSize,
           plan: userPlan,

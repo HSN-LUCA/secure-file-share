@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS files (
   file_size BIGINT NOT NULL,
   file_type VARCHAR(50) NOT NULL,
   s3_key VARCHAR(500) NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   download_count INT DEFAULT 0,
   is_scanned BOOLEAN DEFAULT FALSE,

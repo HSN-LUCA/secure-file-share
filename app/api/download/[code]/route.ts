@@ -70,8 +70,21 @@ export async function GET(
     const file = fileResult.data;
 
     // Check if file has expired
-    const expiresAt = new Date(file.expires_at);
+    // The expires_at column is TIMESTAMP (no timezone). Supabase returns it as a string
+    // without timezone info (e.g. "2026-03-13T10:20:00"). We treat it as UTC by appending 'Z'.
+    const rawExpiresAt = file.expires_at;
+    const expiresAtStr = typeof rawExpiresAt === 'string'
+      ? (rawExpiresAt.endsWith('Z') || rawExpiresAt.includes('+') ? rawExpiresAt : rawExpiresAt + 'Z')
+      : new Date(rawExpiresAt).toISOString();
+    const expiresAt = new Date(expiresAtStr);
     const now = new Date();
+
+    console.log('[DOWNLOAD] raw expires_at from DB:', rawExpiresAt, '| type:', typeof rawExpiresAt);
+    console.log('[DOWNLOAD] expiresAtStr:', expiresAtStr);
+    console.log('[DOWNLOAD] parsed expiresAt (UTC):', expiresAt.toISOString());
+    console.log('[DOWNLOAD] now (UTC):', now.toISOString());
+    console.log('[DOWNLOAD] diff ms:', expiresAt.getTime() - now.getTime());
+    console.log('[DOWNLOAD] is expired:', now > expiresAt);
 
     if (now > expiresAt) {
       // Log expired file download attempt
