@@ -95,7 +95,6 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const storageDurationStr = formData.get('storage_duration') as string | null;
-    const shareNumberStr = formData.get('share_number') as string | null;
     const captchaToken = formData.get('captcha_token') as string | null;
 
     console.log('[UPLOAD] Form data parsed:', { 
@@ -103,7 +102,6 @@ export async function POST(request: NextRequest) {
       fileName: file?.name,
       fileSize: file?.size,
       storageDuration: storageDurationStr,
-      shareNumber: shareNumberStr,
       hasCaptchaToken: !!captchaToken 
     });
 
@@ -135,19 +133,8 @@ export async function POST(request: NextRequest) {
 
     // Validate share number if provided
     let shareCode: string;
-    if (shareNumberStr) {
-      const parsed = parseInt(shareNumberStr, 10);
-      if (isNaN(parsed) || parsed < 1) {
-        return NextResponse.json(
-          { success: false, error: 'Share number must be a positive number' },
-          { status: 400 }
-        );
-      }
-      shareCode = parsed.toString();
-    } else {
-      // Generate random share code if not provided
-      shareCode = generateShareCode();
-    }
+    // Generate random share code
+    shareCode = generateShareCode();
 
     // Verify CAPTCHA token
     const captchaResult = await verifyCaptchaToken(captchaToken, 'upload', 0.5);

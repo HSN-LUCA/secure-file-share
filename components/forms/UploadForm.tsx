@@ -21,7 +21,6 @@ interface UploadState {
   fileName: string | null;
   expiresAt: string | null;
   expirationMinutes: number;
-  shareNumber: string;
 }
 
 export function UploadForm({ onUploadComplete }: UploadFormProps) {
@@ -36,7 +35,6 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
     fileName: null,
     expiresAt: null,
     expirationMinutes: 20,
-    shareNumber: '',
   });
 
   const [copied, setCopied] = useState(false);
@@ -184,9 +182,6 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       formData.append('file', state.file);
       formData.append('captcha_token', token);
       formData.append('expirationMinutes', state.expirationMinutes.toString());
-      if (state.shareNumber) {
-        formData.append('share_number', state.shareNumber);
-      }
 
       // Upload file
       const xhr = new XMLHttpRequest();
@@ -292,7 +287,6 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       fileName: null,
       expiresAt: null,
       expirationMinutes: 20,
-      shareNumber: '',
     });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -491,7 +485,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
 
       {/* Expiration Time Input */}
       {state.file && !state.uploading && (
-        <div className="mb-5">
+        <div className="mb-6">
           <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
             Expiration Time (minutes)
           </label>
@@ -505,23 +499,6 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
             }}
             className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-neutral-700 dark:text-white bg-white text-neutral-900 transition-all"
             aria-label="Set file expiration time in minutes"
-          />
-        </div>
-      )}
-
-      {/* Share Number Input */}
-      {state.file && !state.uploading && (
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
-            Share Code (Optional)
-          </label>
-          <input
-            type="text"
-            placeholder="Leave empty for auto-generated code"
-            value={state.shareNumber}
-            onChange={(e) => setState(prev => ({ ...prev, shareNumber: e.target.value }))}
-            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-neutral-700 dark:text-white bg-white text-neutral-900 transition-all"
-            aria-label="Enter optional share code"
           />
         </div>
       )}
