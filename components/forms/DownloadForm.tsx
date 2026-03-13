@@ -284,7 +284,7 @@ export function DownloadForm() {
         <Button
           onClick={handleDownload}
           disabled={state.downloading}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 dark:disabled:from-neutral-600 dark:disabled:to-neutral-600 text-white font-semibold flex items-center justify-center gap-2 mb-3 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+          className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 disabled:from-neutral-400 disabled:via-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:via-blue-800 dark:to-blue-900 dark:hover:from-blue-800 dark:hover:via-blue-900 dark:hover:to-blue-950 dark:disabled:from-neutral-600 dark:disabled:via-neutral-600 dark:disabled:to-neutral-600 text-white font-bold flex items-center justify-center gap-2 mb-3 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
           aria-label={state.downloading ? 'Downloading file' : 'Download file'}
         >
           {state.downloading ? (
@@ -347,7 +347,7 @@ export function DownloadForm() {
       <Button
         onClick={handleFetchFileInfo}
         disabled={!state.shareCode || state.loading}
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 dark:disabled:from-neutral-600 dark:disabled:to-neutral-600 text-white font-semibold flex items-center justify-center gap-2 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+        className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 disabled:from-neutral-400 disabled:via-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:via-blue-800 dark:to-blue-900 dark:hover:from-blue-800 dark:hover:via-blue-900 dark:hover:to-blue-950 dark:disabled:from-neutral-600 dark:disabled:via-neutral-600 dark:disabled:to-neutral-600 text-white font-bold flex items-center justify-center gap-2 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
         aria-label={state.loading ? 'Loading file info' : 'Get file info'}
       >
         {state.loading ? (

@@ -493,14 +493,16 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       {state.file && !state.uploading && (
         <div className="mb-5">
           <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
-            Expiration Time
+            Expiration Time (minutes)
           </label>
           <input
-            type="number"
-            min="1"
-            max="1440"
+            type="text"
+            placeholder="e.g., 20"
             value={state.expirationMinutes}
-            onChange={(e) => setState(prev => ({ ...prev, expirationMinutes: Math.max(1, parseInt(e.target.value) || 1) }))}
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 1;
+              setState(prev => ({ ...prev, expirationMinutes: Math.max(1, val) }));
+            }}
             className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-neutral-700 dark:text-white bg-white text-neutral-900 transition-all"
             aria-label="Set file expiration time in minutes"
           />
@@ -511,15 +513,15 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       {state.file && !state.uploading && (
         <div className="mb-6">
           <label className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
-            Share Number (Optional)
+            Share Code (Optional)
           </label>
           <input
             type="text"
-            placeholder="e.g., 12345"
+            placeholder="Leave empty for auto-generated code"
             value={state.shareNumber}
             onChange={(e) => setState(prev => ({ ...prev, shareNumber: e.target.value }))}
             className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 dark:bg-neutral-700 dark:text-white bg-white text-neutral-900 transition-all"
-            aria-label="Enter optional share number"
+            aria-label="Enter optional share code"
           />
         </div>
       )}
@@ -528,7 +530,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       <Button
         onClick={handleUpload}
         disabled={!state.file || state.uploading}
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 dark:disabled:from-neutral-600 dark:disabled:to-neutral-600 text-white font-semibold flex items-center justify-center gap-2 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+        className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-700 hover:via-blue-800 hover:to-blue-900 disabled:from-neutral-400 disabled:via-neutral-400 disabled:to-neutral-400 dark:from-blue-700 dark:via-blue-800 dark:to-blue-900 dark:hover:from-blue-800 dark:hover:via-blue-900 dark:hover:to-blue-950 dark:disabled:from-neutral-600 dark:disabled:via-neutral-600 dark:disabled:to-neutral-600 text-white font-bold flex items-center justify-center gap-2 py-3 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95"
         aria-label={state.uploading ? 'Uploading file' : 'Upload file'}
       >
         {state.uploading ? (
@@ -549,7 +551,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       {/* File Info */}
       {state.file && !state.uploading && (
         <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center mt-4">
-          Your file will be encrypted and automatically deleted after 20 minutes.
+          Files expire after {state.expirationMinutes} minutes
         </p>
       )}
     </div>
