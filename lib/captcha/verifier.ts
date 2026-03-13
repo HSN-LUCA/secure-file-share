@@ -102,8 +102,6 @@ export async function verifyCaptchaToken(
       };
     }
 
-    // Skip action validation - allow any action
-    // This prevents action mismatch errors during development
     if (data.action) {
       console.debug(`CAPTCHA action: ${data.action}`);
     }
