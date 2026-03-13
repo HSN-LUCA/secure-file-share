@@ -155,6 +155,26 @@ export async function getFileByShareCode(
 }
 
 /**
+ * Get all files by share code (for group uploads)
+ */
+export async function getFilesByShareCode(
+  shareCode: string
+): Promise<QueryResultList<File>> {
+  try {
+    const { data, error } = await getClient()
+      .from('files')
+      .select('*')
+      .eq('share_code', shareCode)
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+    return { data: data || [], error: null };
+  } catch (error) {
+    return { data: [], error: error as Error };
+  }
+}
+
+/**
  * Get file by ID
  */
 export async function getFileById(fileId: string): Promise<QueryResult<File>> {

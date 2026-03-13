@@ -131,10 +131,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate share number if provided
+    // Use provided share_number as group code, or generate a new one
+    const shareNumberRaw = formData.get('share_number') as string | null;
     let shareCode: string;
-    // Generate random share code
-    shareCode = generateShareCode();
+    if (shareNumberRaw && /^\d{6}$/.test(shareNumberRaw.trim())) {
+      shareCode = shareNumberRaw.trim();
+    } else {
+      shareCode = generateShareCode();
+    }
 
     // Verify CAPTCHA token
     const captchaResult = await verifyCaptchaToken(captchaToken, 'upload', 0.5);

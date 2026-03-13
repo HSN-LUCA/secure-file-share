@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getFileByShareCode, updateFile, createDownload, createAnalytics } from '@/lib/db/queries';
+import { getFileByShareCode, getFilesByShareCode, updateFile, createDownload, createAnalytics } from '@/lib/db/queries';
 import { downloadFile } from '@/lib/storage/utils';
 import { validateShareCode, sanitizeShareCode } from '@/lib/validation/input-validation';
 
@@ -105,10 +105,34 @@ export async function GET(
       );
     }
 
-    // If info-only request, return file metadata
+    // If info-only request, return file metadata (supports group codes)
     if (infoOnly) {
+      const groupResult = await getFilesByShareCode(sanitizedShareCode);
+      if (!groupResult.error && groupResult.data.length > 1) {
+        // Group upload — return list
+        const now = new Date();
+        const files = groupResult.data.filter(f => {
+          const raw = f.expires_at;
+          const str = typeof raw === 'string'
+            ? (raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z')
+            : new Date(raw).toISOString();
+          return now <= new Date(str);
+        });
+        return NextResponse.json({
+          success: true,
+          isGroup: true,
+          files: files.map(f => ({
+            id: f.id,
+            fileName: f.file_name,
+            fileSize: f.file_size,
+            expiresAt: f.expires_at,
+          })),
+        });
+      }
+      // Single file
       return NextResponse.json({
         success: true,
+        isGroup: false,
         fileName: file.file_name,
         fileSize: file.file_size,
         expiresAt: file.expires_at,
