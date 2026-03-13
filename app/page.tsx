@@ -9,7 +9,7 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [shareCode, setShareCode] = useState('');
-  const [shareNumber, setShareNumber] = useState('');
+  const [expirationMinutes, setExpirationMinutes] = useState(20);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (selectedFile: File) => {
@@ -32,9 +32,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('captcha_token', 'dev-token-' + Math.random().toString(36).substring(2, 11));
-      if (shareNumber) {
-        formData.append('share_number', shareNumber);
-      }
+      formData.append('expirationMinutes', expirationMinutes.toString());
 
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -168,25 +166,18 @@ export default function Home() {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Share Number (optional)
+                  Expiration Time (minutes)
                 </label>
                 <input
-                  type="number"
-                  min="1000"
-                  max="99999999"
-                  placeholder="Enter 4-8 digit number"
-                  value={shareNumber}
+                  type="text"
+                  placeholder="e.g., 20"
+                  value={expirationMinutes}
                   onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === '' || (parseInt(val) >= 1000 && parseInt(val) <= 99999999)) {
-                      setShareNumber(val);
-                    }
+                    const val = parseInt(e.target.value) || 1;
+                    setExpirationMinutes(Math.max(1, val));
                   }}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  4-8 digits. Share this number with others to upload files together
-                </p>
               </div>
 
               <motion.button
