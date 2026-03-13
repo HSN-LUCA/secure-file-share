@@ -13,7 +13,7 @@ export default function RecaptchaLoader() {
     if (document.querySelector('script[data-recaptcha]')) return;
 
     const script = document.createElement('script');
-    script.src = `https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`;
+    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
     script.async = true;
     script.defer = true;
     script.setAttribute('data-recaptcha', 'true');

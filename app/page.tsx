@@ -34,11 +34,11 @@ export default function Home() {
       // Get reCAPTCHA Enterprise token
       let captchaToken = '';
       try {
-        // Wait up to 5 seconds for grecaptcha.enterprise to be available
+        // Wait up to 5 seconds for grecaptcha to be available (standard v3)
         const grecaptcha = await new Promise<any>((resolve) => {
           const start = Date.now();
           const check = () => {
-            const g = (window as any).grecaptcha?.enterprise;
+            const g = (window as any).grecaptcha;
             if (g?.ready) return resolve(g);
             if (Date.now() - start > 5000) return resolve(null);
             setTimeout(check, 100);
