@@ -47,7 +47,7 @@ export default function Home() {
         });
 
         if (grecaptcha) {
-          const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!;
+          const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!.trim();
           captchaToken = await new Promise<string>((resolve, reject) => {
             grecaptcha.ready(async () => {
               try {

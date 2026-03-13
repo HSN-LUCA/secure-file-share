@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 // Next.js Script component querySelector crash with special chars in site key
 export default function RecaptchaLoader() {
   useEffect(() => {
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim();
     if (!siteKey) return;
 
     // Don't inject twice
