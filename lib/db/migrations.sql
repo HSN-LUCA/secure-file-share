@@ -116,12 +116,12 @@ CREATE INDEX IF NOT EXISTS idx_analytics_ip_address ON analytics(ip_address);
 
 -- Function to update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $$$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SET search_path = public;
+$$$ LANGUAGE plpgsql SET search_path = public;
 
 -- Trigger to automatically update updated_at on users table
 DROP TRIGGER IF EXISTS update_users_updated_at ON users;
