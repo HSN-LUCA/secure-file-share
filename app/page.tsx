@@ -9,11 +9,13 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [shareCode, setShareCode] = useState('');
+  const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (selectedFile: File) => {
     setFile(selectedFile);
     setUploadSuccess(false);
+    setUploadError('');
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,16 +29,27 @@ export default function Home() {
     if (!file) return;
 
     setUploading(true);
+    setUploadError('');
     try {
       // Get reCAPTCHA token
       let captchaToken = 'dev-token-' + Math.random().toString(36).substring(2, 11);
       try {
         const grecaptcha = (window as any).grecaptcha;
-        if (grecaptcha?.execute) {
-          captchaToken = await grecaptcha.execute(
-            process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-            { action: 'upload' }
-          );
+        if (grecaptcha) {
+          // Wait for reCAPTCHA to be fully ready before executing
+          captchaToken = await new Promise<string>((resolve, reject) => {
+            grecaptcha.ready(async () => {
+              try {
+                const token = await grecaptcha.execute(
+                  process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+                  { action: 'upload' }
+                );
+                resolve(token);
+              } catch (e) {
+                reject(e);
+              }
+            });
+          });
         }
       } catch (e) {
         console.warn('reCAPTCHA unavailable, using fallback token');
@@ -56,9 +69,12 @@ export default function Home() {
         setShareCode(data.shareCode);
         setUploadSuccess(true);
         setFile(null);
+      } else {
+        setUploadError(data.error || 'Upload failed. Please try again.');
       }
     } catch (error) {
       console.error('Upload failed:', error);
+      setUploadError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -185,6 +201,9 @@ export default function Home() {
               >
                 {uploading ? 'Uploading...' : 'Upload File'}
               </motion.button>
+              {uploadError && (
+                <p className="mt-3 text-sm text-red-600 text-center">{uploadError}</p>
+              )}
             </motion.div>
           )}
 
