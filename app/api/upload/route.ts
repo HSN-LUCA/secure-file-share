@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!file) {
+      console.log('[UPLOAD] No file provided');
       return NextResponse.json(
         { success: false, error: 'File is required' },
         { status: 400 }
@@ -117,6 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!captchaToken) {
+      console.log('[UPLOAD] No CAPTCHA token provided');
       return NextResponse.json(
         { success: false, error: 'CAPTCHA token is required' },
         { status: 400 }
@@ -185,19 +187,27 @@ export async function POST(request: NextRequest) {
     let userId: string | undefined;
     let planLimits = PLAN_LIMITS['free'];
     
-    const user = getUserFromRequest(request);
-    if (user) {
-      userId = user.userId;
-      // Fetch user from database to get their plan
-      const userResult = await getUserById(user.userId);
-      if (!userResult.error && userResult.data) {
-        userPlan = userResult.data.plan;
-        
-        // Check if subscription has expired
-        if (userResult.data.subscription_expires_at && new Date(userResult.data.subscription_expires_at) < new Date()) {
-          userPlan = 'free';
+    try {
+      const user = getUserFromRequest(request);
+      if (user) {
+        userId = user.userId;
+        console.log('[UPLOAD] User authenticated:', userId);
+        // Fetch user from database to get their plan
+        const userResult = await getUserById(user.userId);
+        if (!userResult.error && userResult.data) {
+          userPlan = userResult.data.plan;
+          
+          // Check if subscription has expired
+          if (userResult.data.subscription_expires_at && new Date(userResult.data.subscription_expires_at) < new Date()) {
+            userPlan = 'free';
+          }
         }
+      } else {
+        console.log('[UPLOAD] User not authenticated (anonymous)');
       }
+    } catch (authError) {
+      console.error('[UPLOAD] Error getting user:', authError);
+      // Continue as anonymous user
     }
 
     // Get plan limits (use default or custom for enterprise)
