@@ -14,12 +14,12 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url(),
 
   // Supabase Database
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().trim().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().trim().min(1),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().trim().min(1),
 
   // PostgreSQL Direct Connection (optional)
-  DATABASE_URL: z.string().optional(),
+  DATABASE_URL: z.string().trim().optional(),
 
   // Database Connection Pool Configuration
   DB_POOL_MAX: z.coerce.number().default(20),
@@ -29,25 +29,25 @@ const envSchema = z.object({
 
   // Object Storage
   OBJECT_STORAGE_PROVIDER: z.string().trim().pipe(z.enum(['aws-s3', 'cloudflare-r2'])).default('aws-s3'),
-  OBJECT_STORAGE_BUCKET: z.string().min(1),
-  OBJECT_STORAGE_REGION: z.string().min(1),
-  OBJECT_STORAGE_ACCESS_KEY_ID: z.string().min(1),
-  OBJECT_STORAGE_SECRET_ACCESS_KEY: z.string().min(1),
+  OBJECT_STORAGE_BUCKET: z.string().trim().min(1),
+  OBJECT_STORAGE_REGION: z.string().trim().min(1),
+  OBJECT_STORAGE_ACCESS_KEY_ID: z.string().trim().min(1),
+  OBJECT_STORAGE_SECRET_ACCESS_KEY: z.string().trim().min(1),
   OBJECT_STORAGE_ENDPOINT: z.string().url().optional(),
 
   // File Encryption
   ENCRYPTION_KEY: z.string().trim().regex(/^[a-f0-9]{64}$/, 'Must be a 64-character hex string (256-bit key)'),
 
   // Virus Scanning
-  VIRUS_SCANNER_API_KEY: z.string().min(1),
+  VIRUS_SCANNER_API_KEY: z.string().trim().min(1),
   VIRUS_SCANNER_TYPE: z.string().trim().pipe(z.enum(['clamav', 'virustotal'])).default('clamav'),
 
   // reCAPTCHA
-  NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string().min(1),
-  RECAPTCHA_SECRET_KEY: z.string().min(1),
+  NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string().trim().min(1),
+  RECAPTCHA_SECRET_KEY: z.string().trim().min(1),
 
   // JWT
-  JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
+  JWT_SECRET: z.string().trim().min(32, 'JWT secret must be at least 32 characters'),
 
   // Stripe (optional for MVP)
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
