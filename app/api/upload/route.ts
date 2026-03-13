@@ -317,30 +317,44 @@ export async function POST(request: NextRequest) {
       );
       console.log('[UPLOAD] S3 upload completed, S3 key:', s3Key);
 
-      // Store file metadata in database with timeout
+      // Store file metadata in database with timeout + retry on share_code collision
       console.log('[UPLOAD] Storing file metadata in database');
-      const fileRecord = await Promise.race([
-        createFile({
-          id: fileId,
-          share_code: shareCode,
-          user_id: userId,
-          file_name: fileName,
-          file_size: fileSize,
-          file_type: mimeType,
-          s3_key: s3Key,
-          expires_at: expiresAtISO,
-          storage_duration_minutes: storageDurationMinutes,
-          ip_address: clientIp,
-          user_agent: userAgent,
-          is_scanned: false,
-          is_safe: null,
-          encryption_iv: encryptionData.iv,
-          encryption_auth_tag: encryptionData.authTag,
-        }),
-        new Promise<any>((_, reject) =>
-          setTimeout(() => reject(new Error('Database operation timeout')), 10000)
-        ),
-      ]) as any;
+      let fileRecord: any = null;
+      let currentShareCode = shareCode;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        fileRecord = await Promise.race([
+          createFile({
+            id: fileId,
+            share_code: currentShareCode,
+            user_id: userId,
+            file_name: fileName,
+            file_size: fileSize,
+            file_type: mimeType,
+            s3_key: s3Key,
+            expires_at: expiresAtISO,
+            storage_duration_minutes: storageDurationMinutes,
+            ip_address: clientIp,
+            user_agent: userAgent,
+            is_scanned: false,
+            is_safe: null,
+            encryption_iv: encryptionData.iv,
+            encryption_auth_tag: encryptionData.authTag,
+          }),
+          new Promise<any>((_, reject) =>
+            setTimeout(() => reject(new Error('Database operation timeout')), 10000)
+          ),
+        ]) as any;
+
+        // If unique constraint violation on share_code, generate a new one and retry
+        if (fileRecord?.error?.code === '23505' && fileRecord.error.message?.includes('share_code')) {
+          console.warn(`[UPLOAD] share_code collision on attempt ${attempt + 1}, retrying with new code`);
+          currentShareCode = generateShareCode();
+          continue;
+        }
+        break;
+      }
+      // Update shareCode to whatever was actually stored
+      shareCode = currentShareCode;
 
       if (fileRecord?.error) {
         console.error('[UPLOAD] Failed to create file record:', fileRecord.error);

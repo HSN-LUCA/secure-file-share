@@ -262,7 +262,7 @@ export default function Home() {
               </div>
 
               <p className="text-xs text-gray-400 text-center mb-3">
-                {files.length} file{files.length > 1 ? 's' : ''} selected — each gets its own share code
+                {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
               </p>
 
               <motion.button
@@ -288,7 +288,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          Select multiple files — each gets a unique share code
+          Select multiple files — one shared code for all
         </motion.p>
       </motion.div>
     </div>

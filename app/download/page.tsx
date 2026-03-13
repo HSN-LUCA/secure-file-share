@@ -53,10 +53,11 @@ export default function DownloadPage() {
     }
   };
 
-  const downloadFile = async (code: string, fileName: string) => {
+  const downloadFile = async (code: string, fileName: string, fileId?: string) => {
     setDownloading(fileName);
     try {
-      const response = await fetch(`/api/download/${code}`);
+      const url = fileId ? `/api/download/${code}?fileId=${fileId}` : `/api/download/${code}`;
+      const response = await fetch(url);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -159,7 +160,7 @@ export default function DownloadPage() {
                     <p className="text-xs text-gray-400">{formatSize(f.fileSize)}</p>
                   </div>
                   <button
-                    onClick={() => downloadFile(shareCode.trim(), f.fileName)}
+                    onClick={() => downloadFile(shareCode.trim(), f.fileName, f.id)}
                     disabled={downloading === f.fileName}
                     className="ml-3 flex-shrink-0 p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
                     aria-label={`Download ${f.fileName}`}

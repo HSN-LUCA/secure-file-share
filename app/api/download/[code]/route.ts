@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getFileByShareCode, getFilesByShareCode, updateFile, createDownload, createAnalytics } from '@/lib/db/queries';
+import { getFilesByShareCode, updateFile, createDownload, createAnalytics } from '@/lib/db/queries';
 import { downloadFile } from '@/lib/storage/utils';
 import { validateShareCode, sanitizeShareCode } from '@/lib/validation/input-validation';
 
@@ -47,10 +47,10 @@ export async function GET(
     }
     const sanitizedShareCode = sanitizeShareCode(shareCode);
 
-    // Get file from database by share code
-    const fileResult = await getFileByShareCode(sanitizedShareCode);
+    // Get all files with this share code (handles both single and group uploads)
+    const filesResult = await getFilesByShareCode(sanitizedShareCode);
 
-    if (fileResult.error || !fileResult.data) {
+    if (filesResult.error || !filesResult.data.length) {
       // Log failed download attempt
       await createAnalytics({
         event_type: 'download',
@@ -67,61 +67,29 @@ export async function GET(
       );
     }
 
-    const file = fileResult.data;
+    const normalizeExpiry = (raw: any): string =>
+      typeof raw === 'string'
+        ? (raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z')
+        : new Date(raw).toISOString();
 
-    // Check if file has expired
-    // The expires_at column is TIMESTAMP (no timezone). Supabase returns it as a string
-    // without timezone info (e.g. "2026-03-13T10:20:00"). We treat it as UTC by appending 'Z'.
-    const rawExpiresAt = file.expires_at;
-    const expiresAtStr = typeof rawExpiresAt === 'string'
-      ? (rawExpiresAt.endsWith('Z') || rawExpiresAt.includes('+') ? rawExpiresAt : rawExpiresAt + 'Z')
-      : new Date(rawExpiresAt).toISOString();
-    const expiresAt = new Date(expiresAtStr);
     const now = new Date();
-
-    console.log('[DOWNLOAD] raw expires_at from DB:', rawExpiresAt, '| type:', typeof rawExpiresAt);
-    console.log('[DOWNLOAD] expiresAtStr:', expiresAtStr);
-    console.log('[DOWNLOAD] parsed expiresAt (UTC):', expiresAt.toISOString());
-    console.log('[DOWNLOAD] now (UTC):', now.toISOString());
-    console.log('[DOWNLOAD] diff ms:', expiresAt.getTime() - now.getTime());
-    console.log('[DOWNLOAD] is expired:', now > expiresAt);
-
-    if (now > expiresAt) {
-      // Log expired file download attempt
-      await createAnalytics({
-        event_type: 'download',
-        file_id: file.id,
-        ip_address: clientIp,
-        metadata: {
-          error: 'File expired',
-          shareCode: sanitizedShareCode,
-          expiresAt: file.expires_at,
-        },
-      }).catch(err => console.error('Failed to log analytics:', err));
-
-      return NextResponse.json(
-        { success: false, error: 'File has expired and is no longer available' },
-        { status: 410 }
-      );
-    }
 
     // If info-only request, return file metadata (supports group codes)
     if (infoOnly) {
-      const groupResult = await getFilesByShareCode(sanitizedShareCode);
-      if (!groupResult.error && groupResult.data.length > 1) {
-        // Group upload — return list
-        const now = new Date();
-        const files = groupResult.data.filter(f => {
-          const raw = f.expires_at;
-          const str = typeof raw === 'string'
-            ? (raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z')
-            : new Date(raw).toISOString();
-          return now <= new Date(str);
-        });
+      const activFiles = filesResult.data.filter(f => now <= new Date(normalizeExpiry(f.expires_at)));
+
+      if (!activFiles.length) {
+        return NextResponse.json(
+          { success: false, error: 'File has expired and is no longer available' },
+          { status: 410 }
+        );
+      }
+
+      if (activFiles.length > 1) {
         return NextResponse.json({
           success: true,
           isGroup: true,
-          files: files.map(f => ({
+          files: activFiles.map(f => ({
             id: f.id,
             fileName: f.file_name,
             fileSize: f.file_size,
@@ -129,14 +97,36 @@ export async function GET(
           })),
         });
       }
+
       // Single file
+      const f = activFiles[0];
       return NextResponse.json({
         success: true,
         isGroup: false,
-        fileName: file.file_name,
-        fileSize: file.file_size,
-        expiresAt: file.expires_at,
+        fileName: f.file_name,
+        fileSize: f.file_size,
+        expiresAt: f.expires_at,
       });
+    }
+
+    // For actual download, pick the right file
+    // If a specific fileId is requested (group download), find that file
+    const requestedFileId = url.searchParams.get('fileId');
+    const file = requestedFileId
+      ? filesResult.data.find(f => f.id === requestedFileId && now <= new Date(normalizeExpiry(f.expires_at)))
+      : filesResult.data.find(f => now <= new Date(normalizeExpiry(f.expires_at)));
+
+    if (!file) {
+      await createAnalytics({
+        event_type: 'download',
+        ip_address: clientIp,
+        metadata: { error: 'File expired', shareCode: sanitizedShareCode },
+      }).catch(() => {});
+
+      return NextResponse.json(
+        { success: false, error: 'File has expired and is no longer available' },
+        { status: 410 }
+      );
     }
 
     try {
