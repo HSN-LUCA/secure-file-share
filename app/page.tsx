@@ -28,9 +28,23 @@ export default function Home() {
 
     setUploading(true);
     try {
+      // Get reCAPTCHA token
+      let captchaToken = 'dev-token-' + Math.random().toString(36).substring(2, 11);
+      try {
+        const grecaptcha = (window as any).grecaptcha;
+        if (grecaptcha?.execute) {
+          captchaToken = await grecaptcha.execute(
+            process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+            { action: 'upload' }
+          );
+        }
+      } catch (e) {
+        console.warn('reCAPTCHA unavailable, using fallback token');
+      }
+
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('captcha_token', 'dev-token-' + Math.random().toString(36).substring(2, 11));
+      formData.append('captcha_token', captchaToken);
 
       const response = await fetch('/api/upload', {
         method: 'POST',
