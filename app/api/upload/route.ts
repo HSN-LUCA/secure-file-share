@@ -2,7 +2,8 @@
  * File Upload API Endpoint
  * POST /api/upload
  * 
- * Handles file uploads with validation, encryption, storage, rate limiting, and bot detection
+ * Handles file uploads with validation, encryption, storage, rate limiting, and bot detection.
+ * Supports multipart form data with file, CAPTCHA token, and optional parameters.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,13 +11,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { validateFile, sanitizeFileName } from '@/lib/validation/file-validation';
 import {
   validateCaptchaToken,
-  sanitizeCaptchaToken,
 } from '@/lib/validation/input-validation';
 import { generateShareCode } from '@/lib/share-code';
 import { uploadFile } from '@/lib/storage/utils';
 import { createFile, getUserById, getEnterprisePlan } from '@/lib/db/queries';
 import { createAnalytics } from '@/lib/db/queries';
-import { getEnv } from '@/lib/env';
 import { PLAN_LIMITS, UserPlan } from '@/types';
 import { verifyCaptchaToken, getCaptchaErrorMessage } from '@/lib/captcha/verifier';
 import { createRateLimitingMiddleware, getClientIp, createRateLimitErrorResponse } from '@/lib/middleware/rate-limiting';
@@ -186,9 +185,10 @@ export async function POST(request: NextRequest) {
     let userPlan: UserPlan = 'free';
     let userId: string | undefined;
     let planLimits = PLAN_LIMITS['free'];
+    let user: any = null;
     
     try {
-      const user = getUserFromRequest(request);
+      user = getUserFromRequest(request);
       if (user) {
         userId = user.userId;
         console.log('[UPLOAD] User authenticated:', userId);
@@ -288,7 +288,7 @@ export async function POST(request: NextRequest) {
     let storageDurationMinutes = planLimits.storageDurationMinutes;
     
     // Allow override if provided and user is authenticated
-    if (storageDurationStr && user) {
+    if (storageDurationStr && userId) {
       const parsed = parseInt(storageDurationStr, 10);
       if (!isNaN(parsed) && parsed > 0 && parsed <= planLimits.storageDurationMinutes) {
         storageDurationMinutes = parsed;
