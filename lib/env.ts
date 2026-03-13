@@ -28,7 +28,7 @@ const envSchema = z.object({
   DB_CONNECTION_TIMEOUT: z.coerce.number().default(2000),
 
   // Object Storage
-  OBJECT_STORAGE_PROVIDER: z.enum(['aws-s3', 'cloudflare-r2']).default('aws-s3'),
+  OBJECT_STORAGE_PROVIDER: z.string().trim().pipe(z.enum(['aws-s3', 'cloudflare-r2'])).default('aws-s3'),
   OBJECT_STORAGE_BUCKET: z.string().min(1),
   OBJECT_STORAGE_REGION: z.string().min(1),
   OBJECT_STORAGE_ACCESS_KEY_ID: z.string().min(1),
@@ -36,11 +36,11 @@ const envSchema = z.object({
   OBJECT_STORAGE_ENDPOINT: z.string().url().optional(),
 
   // File Encryption
-  ENCRYPTION_KEY: z.string().regex(/^[a-f0-9]{64}$/, 'Must be a 64-character hex string (256-bit key)'),
+  ENCRYPTION_KEY: z.string().trim().regex(/^[a-f0-9]{64}$/, 'Must be a 64-character hex string (256-bit key)'),
 
   // Virus Scanning
   VIRUS_SCANNER_API_KEY: z.string().min(1),
-  VIRUS_SCANNER_TYPE: z.enum(['clamav', 'virustotal']).default('clamav'),
+  VIRUS_SCANNER_TYPE: z.string().trim().pipe(z.enum(['clamav', 'virustotal'])).default('clamav'),
 
   // reCAPTCHA
   NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string().min(1),

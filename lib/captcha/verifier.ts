@@ -75,14 +75,19 @@ export async function verifyCaptchaToken(
       };
     }
 
-    // Verify token with Google reCAPTCHA API
-    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: `secret=${secretKey}&response=${token}`,
-    });
+    // Verify token with Google reCAPTCHA Enterprise API
+    const projectId = process.env.RECAPTCHA_PROJECT_ID || 'secure-file-share';
+    const siteKey = env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+    const response = await fetch(
+      `https://recaptchaenterprise.googleapis.com/v1/projects/${projectId}/assessments?key=${secretKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: { token, siteKey, expectedAction: expectedAction },
+        }),
+      }
+    );
 
     if (!response.ok) {
       console.error('reCAPTCHA API error:', response.statusText);
@@ -94,36 +99,38 @@ export async function verifyCaptchaToken(
 
     const data = await response.json();
 
-    // Check if verification was successful
-    if (!data.success) {
+    // Enterprise API returns { tokenProperties, riskAnalysis, event }
+    const tokenProps = data.tokenProperties;
+    if (!tokenProps?.valid) {
       return {
         success: false,
-        errorCodes: data['error-codes'] || ['VERIFICATION_FAILED'],
+        errorCodes: [tokenProps?.invalidReason || 'VERIFICATION_FAILED'],
       };
     }
 
-    if (data.action) {
-      console.debug(`CAPTCHA action: ${data.action}`);
+    const score: number = data.riskAnalysis?.score ?? 1.0;
+
+    if (data.event?.expectedAction) {
+      console.debug(`CAPTCHA action: ${data.event.expectedAction}`);
     }
 
     // Check score threshold
-    if (data.score < minScore) {
-      console.warn(`Score too low: ${data.score} < ${minScore}`);
+    if (score < minScore) {
+      console.warn(`Score too low: ${score} < ${minScore}`);
       return {
         success: false,
-        score: data.score,
-        action: data.action,
+        score,
+        action: tokenProps.action,
         errorCodes: ['SCORE_TOO_LOW'],
       };
     }
 
-    // Verification successful
     return {
       success: true,
-      score: data.score,
-      action: data.action,
-      challengeTs: data.challenge_ts,
-      hostname: data.hostname,
+      score,
+      action: tokenProps.action,
+      challengeTs: tokenProps.createTime,
+      hostname: tokenProps.hostname,
     };
   } catch (error) {
     console.error('CAPTCHA verification error:', error);
