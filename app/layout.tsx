@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -8,6 +7,7 @@ import UpdatePrompt from "@/components/pwa/UpdatePrompt";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import OfflineIndicator from "@/components/pwa/OfflineIndicator";
 import { LenisWrapper } from "@/components/providers/LenisWrapper";
+import RecaptchaLoader from "@/components/captcha/RecaptchaLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,11 +57,7 @@ export default function RootLayout({
           <InstallPrompt />
           <OfflineIndicator />
         </LenisWrapper>
-        {/* reCAPTCHA v3 - loaded via next/script */}
-        <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-          strategy="afterInteractive"
-        />
+        <RecaptchaLoader />
       </body>
     </html>
   );
