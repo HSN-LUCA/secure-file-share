@@ -32,11 +32,21 @@ export default function Home() {
     setUploadError('');
     try {
       // Get reCAPTCHA token
-      let captchaToken = 'dev-token-' + Math.random().toString(36).substring(2, 11);
+      let captchaToken = '';
       try {
-        const grecaptcha = (window as any).grecaptcha;
+        // Wait up to 5 seconds for grecaptcha to be available
+        const grecaptcha = await new Promise<any>((resolve) => {
+          const start = Date.now();
+          const check = () => {
+            const g = (window as any).grecaptcha;
+            if (g?.ready) return resolve(g);
+            if (Date.now() - start > 5000) return resolve(null);
+            setTimeout(check, 100);
+          };
+          check();
+        });
+
         if (grecaptcha) {
-          // Wait for reCAPTCHA to be fully ready before executing
           captchaToken = await new Promise<string>((resolve, reject) => {
             grecaptcha.ready(async () => {
               try {
@@ -50,9 +60,13 @@ export default function Home() {
               }
             });
           });
+        } else {
+          console.warn('reCAPTCHA unavailable, using fallback token');
+          captchaToken = 'dev-token-' + Math.random().toString(36).substring(2, 11);
         }
       } catch (e) {
         console.warn('reCAPTCHA unavailable, using fallback token');
+        captchaToken = 'dev-token-' + Math.random().toString(36).substring(2, 11);
       }
 
       const formData = new FormData();

@@ -60,7 +60,7 @@ export default function RootLayout({
         {/* reCAPTCHA v3 - loaded via next/script to avoid querySelector selector issues */}
         <Script
           src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
       </body>
     </html>

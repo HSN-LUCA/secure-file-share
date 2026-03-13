@@ -66,6 +66,15 @@ export async function verifyCaptchaToken(
       };
     }
 
+    // Block dev tokens from reaching Google's API in production
+    if (token.startsWith('dev-token-')) {
+      console.error('Dev token used in production - reCAPTCHA script failed to load');
+      return {
+        success: false,
+        errorCodes: ['RECAPTCHA_NOT_LOADED'],
+      };
+    }
+
     // Verify token with Google reCAPTCHA API
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
       method: 'POST',
@@ -143,6 +152,7 @@ export function getCaptchaErrorMessage(errorCodes?: string[]): string {
     'ACTION_MISMATCH': 'CAPTCHA action mismatch',
     'SCORE_TOO_LOW': 'Suspicious activity detected. Please try again.',
     'VERIFICATION_ERROR': 'CAPTCHA verification error',
+    'RECAPTCHA_NOT_LOADED': 'Security check failed to load. Please refresh the page and try again.',
   };
 
   return errorMap[errorCodes[0]] || 'CAPTCHA verification failed';
