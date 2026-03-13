@@ -57,6 +57,15 @@ export async function verifyCaptchaToken(
       };
     }
 
+    // In development, bypass verification for dev tokens
+    if (env.NODE_ENV !== 'production' && token.startsWith('dev-token-')) {
+      return {
+        success: true,
+        score: 0.9,
+        action: expectedAction,
+      };
+    }
+
     // Verify token with Google reCAPTCHA API
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
       method: 'POST',
