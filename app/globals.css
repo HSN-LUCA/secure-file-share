@@ -357,3 +357,16 @@ button:disabled {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-primary);
 }
+
+/* ============================================================================
+   reCAPTCHA v3 Test Mode Message - Hide Testing Notice
+   ============================================================================ */
+.grecaptcha-badge {
+  visibility: hidden;
+}
+
+/* Hide reCAPTCHA testing message that appears in development */
+iframe[src*="recaptcha"],
+.g-recaptcha-response {
+  display: none !important;
+}
