@@ -191,8 +191,13 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Send files fast</h1>
-          <p className="text-gray-500 text-sm">Up to 1 GB for free users</p>
+          <h1 className="text-4xl font-bold mb-1" style={{ fontFamily: 'monospace' }}>
+            <span className="text-gray-900">Send files </span>
+            <span style={{ background: 'linear-gradient(to right, #a855f7, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>fast</span>
+          </h1>
+          <p className="text-gray-500 text-sm" style={{ fontFamily: 'monospace' }}>
+            Up to <span className="font-bold" style={{ background: 'linear-gradient(to right, #D4A017, #F5C842)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>1 GB</span> for free users
+          </p>
         </motion.div>
 
         {/* Upload circle */}
