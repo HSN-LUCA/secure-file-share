@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { useState } from 'react';
-import { Download, Search, CheckCircle } from 'lucide-react';
+import { Download, Search } from 'lucide-react';
 
 interface FileEntry {
   id: string;
@@ -13,11 +13,9 @@ interface FileEntry {
 
 interface SearchResult {
   isGroup: boolean;
-  // single file
   fileName?: string;
   fileSize?: number;
   expiresAt?: string;
-  // group
   files?: FileEntry[];
 }
 
@@ -60,13 +58,13 @@ export default function DownloadPage() {
       const response = await fetch(url);
       if (response.ok) {
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
+        const blobUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
+        a.href = blobUrl;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
+        window.URL.revokeObjectURL(blobUrl);
         document.body.removeChild(a);
       }
     } catch (err) {
@@ -105,7 +103,10 @@ export default function DownloadPage() {
                 value={shareCode}
                 onChange={(e) => { setShareCode(e.target.value); setError(''); }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="w-full px-6 py-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-600 text-center text-lg placeholder-gray-400"
+                className="w-full px-6 py-3 border-2 rounded-lg focus:outline-none text-center text-lg placeholder-gray-400"
+                style={{ borderColor: '#E8C547' }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#D4A017')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#E8C547')}
                 disabled={searching}
               />
 
@@ -122,7 +123,8 @@ export default function DownloadPage() {
               <motion.button
                 onClick={handleSearch}
                 disabled={searching}
-                className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -139,11 +141,12 @@ export default function DownloadPage() {
             transition={{ duration: 0.4 }}
           >
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Download className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: '#FEF9E7' }}>
+                <Download className="w-8 h-8" style={{ color: '#D4A017' }} />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">{result.files.length} Files Found</h2>
-              <p className="text-gray-500 text-sm mt-1">Share code: <span className="font-mono font-bold text-purple-600">{shareCode}</span></p>
+              <p className="text-gray-500 text-sm mt-1">Share code: <span className="font-mono font-bold" style={{ color: '#D4A017' }}>{shareCode}</span></p>
             </div>
 
             <div className="space-y-2 mb-6 max-h-72 overflow-y-auto">
@@ -162,7 +165,10 @@ export default function DownloadPage() {
                   <button
                     onClick={() => downloadFile(shareCode.trim(), f.fileName, f.id)}
                     disabled={downloading === f.fileName}
-                    className="ml-3 flex-shrink-0 p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                    className="ml-3 flex-shrink-0 p-2 text-white rounded-lg transition-colors disabled:opacity-50"
+                    style={{ backgroundColor: '#D4A017' }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#B8860B')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#D4A017')}
                     aria-label={`Download ${f.fileName}`}
                   >
                     {downloading === f.fileName
@@ -176,7 +182,10 @@ export default function DownloadPage() {
 
             <motion.button
               onClick={() => { setResult(null); setShareCode(''); setError(''); }}
-              className="w-full px-6 py-3 border-2 border-purple-300 text-purple-600 font-semibold rounded-lg hover:bg-purple-50 transition-colors"
+              className="w-full px-6 py-3 border-2 font-semibold rounded-lg transition-colors"
+              style={{ borderColor: '#E8C547', color: '#D4A017' }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FEF9E7')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -191,8 +200,9 @@ export default function DownloadPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Download className="w-10 h-10 text-purple-600" />
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+              style={{ backgroundColor: '#FEF9E7' }}>
+              <Download className="w-10 h-10" style={{ color: '#D4A017' }} />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">File Found!</h2>
 
@@ -215,7 +225,8 @@ export default function DownloadPage() {
               <motion.button
                 onClick={() => downloadFile(shareCode.trim(), result.fileName || 'download')}
                 disabled={!!downloading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -225,7 +236,10 @@ export default function DownloadPage() {
 
               <motion.button
                 onClick={() => { setResult(null); setShareCode(''); setError(''); }}
-                className="w-full px-6 py-3 border-2 border-purple-300 text-purple-600 font-semibold rounded-lg hover:bg-purple-50 transition-colors"
+                className="w-full px-6 py-3 border-2 font-semibold rounded-lg transition-colors"
+                style={{ borderColor: '#E8C547', color: '#D4A017' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FEF9E7')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

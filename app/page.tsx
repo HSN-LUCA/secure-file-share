@@ -55,7 +55,6 @@ export default function Home() {
         return [...prev, ...selected.filter(f => !names.has(f.name))];
       });
       setUploadError('');
-      // reset input so same files can be re-added after removal
       e.target.value = '';
     }
   };
@@ -71,7 +70,6 @@ export default function Home() {
     setResults([]);
 
     const uploadResults: UploadResult[] = [];
-    // All files in this batch share one group code
     const groupCode = generateGroupCode();
 
     for (const file of files) {
@@ -110,7 +108,6 @@ export default function Home() {
   const failedResults = results.filter(r => !r.shareCode);
 
   if (results.length > 0) {
-    // All successful files share the same group code
     const groupCode = successResults[0]?.shareCode || '';
 
     return (
@@ -130,18 +127,18 @@ export default function Home() {
 
           {groupCode && (
             <motion.div
-              className="bg-purple-50 rounded-xl p-6 mb-4 text-center"
+              className="rounded-xl p-6 mb-4 text-center"
+              style={{ backgroundColor: '#FEF9E7' }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
               <p className="text-sm text-gray-500 mb-2">Share code for all files</p>
-              <p className="text-4xl font-mono font-bold text-purple-600 tracking-widest">{groupCode}</p>
+              <p className="text-4xl font-mono font-bold tracking-widest" style={{ color: '#D4A017' }}>{groupCode}</p>
               <p className="text-xs text-gray-400 mt-2">Use this code to download all {successResults.length} file{successResults.length > 1 ? 's' : ''}</p>
             </motion.div>
           )}
 
-          {/* File list */}
           <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
             {successResults.map((r, i) => (
               <motion.div
@@ -165,7 +162,10 @@ export default function Home() {
 
           <motion.button
             onClick={reset}
-            className="w-full px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+            className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-colors"
+            style={{ backgroundColor: '#D4A017' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#B8860B')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#D4A017')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -199,16 +199,17 @@ export default function Home() {
           >
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="50%" stopColor="#7c3aed" />
-                <stop offset="100%" stopColor="#a855f7" />
+                <stop offset="0%" stopColor="#F5C842" />
+                <stop offset="50%" stopColor="#D4A017" />
+                <stop offset="100%" stopColor="#F5C842" />
               </linearGradient>
             </defs>
             <circle cx="100" cy="100" r="95" fill="none" stroke="url(#gradient)" strokeWidth="3" />
           </motion.svg>
 
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-40 h-40 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex flex-col items-center justify-center shadow-lg">
+            <div className="w-40 h-40 rounded-full flex flex-col items-center justify-center shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
               <Upload className="w-12 h-12 text-white mb-2" />
               <div className="text-white text-center">
                 <p className="text-xl font-bold mb-1">Upload Files</p>
@@ -268,7 +269,8 @@ export default function Home() {
               <motion.button
                 onClick={handleUpload}
                 disabled={uploading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
+                className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
+                style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
