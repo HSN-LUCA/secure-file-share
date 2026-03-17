@@ -184,6 +184,17 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
+        {/* Hero text */}
+        <motion.div
+          className="text-center mb-6"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Send files fast</h1>
+          <p className="text-gray-500 text-sm">Up to 1 GB for free users</p>
+        </motion.div>
+
         {/* Upload circle */}
         <motion.div
           className="relative w-48 h-48 mb-8 cursor-pointer"
