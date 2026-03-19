@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import MagneticButton from '@/components/ui/MagneticButton';
 
 const Header: React.FC = () => {
   return (
@@ -37,19 +38,17 @@ const Header: React.FC = () => {
 
         {/* Auth buttons */}
         <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
+          <MagneticButton as="a" href="/login" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             Login
-          </Link>
-          <Link
+          </MagneticButton>
+          <MagneticButton
+            as="a"
             href="/register"
             className="text-sm font-semibold text-white px-4 py-2 rounded-full transition-opacity hover:opacity-90"
             style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
           >
             Sign Up
-          </Link>
+          </MagneticButton>
         </div>
 
       </div>

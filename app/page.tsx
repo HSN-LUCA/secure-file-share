@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
 import { Upload, X, CheckCircle } from 'lucide-react';
+import MagneticButton from '@/components/ui/MagneticButton';
 
 interface UploadResult {
   fileName: string;
@@ -160,17 +161,13 @@ export default function Home() {
             ))}
           </div>
 
-          <motion.button
-            onClick={reset}
+          <MagneticButton
             className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-colors"
             style={{ backgroundColor: '#D4A017' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#B8860B')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#D4A017')}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            onClick={reset}
           >
             Upload More Files
-          </motion.button>
+          </MagneticButton>
         </motion.div>
       </div>
     );
@@ -282,16 +279,14 @@ export default function Home() {
                 {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
               </p>
 
-              <motion.button
+              <MagneticButton
                 onClick={handleUpload}
                 disabled={uploading}
                 className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
                 style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
                 {uploading ? `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...` : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}
-              </motion.button>
+              </MagneticButton>
 
               {uploadError && (
                 <p className="mt-3 text-sm text-red-600 text-center">{uploadError}</p>
