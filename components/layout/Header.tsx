@@ -19,8 +19,8 @@ const Header: React.FC = () => {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Desktop nav — temporarily hidden */}
+        {/* <nav className="hidden md:flex items-center gap-8">
           {[
             { label: 'Pricing', href: '/pricing' },
             { label: 'How It Works', href: '/#how-it-works' },
@@ -30,7 +30,7 @@ const Header: React.FC = () => {
               {label}
             </Link>
           ))}
-        </nav>
+        </nav> */}
 
         {/* Desktop auth */}
         <div className="hidden md:flex items-center gap-3">
@@ -47,18 +47,18 @@ const Header: React.FC = () => {
           </MagneticButton>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
+        {/* Mobile hamburger — temporarily hidden */}
+        {/* <button
           className="md:hidden p-2 text-gray-500 hover:text-gray-900"
           onClick={() => setOpen(o => !o)}
           aria-label="Toggle menu"
         >
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        </button> */}
       </div>
 
-      {/* Mobile menu */}
-      {open && (
+      {/* Mobile menu — temporarily hidden */}
+      {/* {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 flex flex-col gap-4">
           {[
             { label: 'Pricing', href: '/pricing' },
@@ -83,7 +83,7 @@ const Header: React.FC = () => {
             </Link>
           </div>
         </div>
-      )}
+      )} */}
     </header>
   );
 };
