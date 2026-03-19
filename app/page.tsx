@@ -112,9 +112,9 @@ export default function Home() {
     const groupCode = successResults[0]?.shareCode || '';
 
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-8">
         <motion.div
-          className="w-full max-w-md"
+          className="w-full max-w-sm sm:max-w-md"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
@@ -174,9 +174,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-8">
       <motion.div
-        className="flex flex-col items-center justify-center w-full max-w-md"
+        className="flex flex-col items-center justify-center w-full max-w-sm sm:max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}

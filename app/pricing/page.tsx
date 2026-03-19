@@ -72,15 +72,15 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-white py-16 px-4">
+    <div className="min-h-screen bg-white py-12 sm:py-16 px-4">
       {/* Header */}
       <motion.div
-        className="text-center mb-12"
+        className="text-center mb-10 sm:mb-14 max-w-xl mx-auto"
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'monospace' }}>
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'monospace' }}>
           Simple, transparent{' '}
           <span style={{ color: '#D4A017' }}>pricing</span>
         </h1>
@@ -88,11 +88,11 @@ export default function PricingPage() {
       </motion.div>
 
       {/* Cards */}
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start justify-items-center">
         {plans.map((plan, i) => (
           <motion.div
             key={plan.name}
-            className="relative rounded-2xl flex flex-col"
+            className="relative rounded-2xl flex flex-col w-full"
             style={{
               border: plan.popular ? '2px solid #D4A017' : '1px solid #e5e7eb',
               background: '#fff',
