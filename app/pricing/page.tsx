@@ -1,334 +1,184 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { PLAN_LIMITS } from '@/types';
+import { motion } from 'motion/react';
+import { Check, X } from 'lucide-react';
+import MagneticButton from '@/components/ui/MagneticButton';
 
-interface PlanFeature {
-  name: string;
-  included: boolean;
-}
-
-interface PlanInfo {
-  name: string;
-  description: string;
-  price: string;
-  period: string;
-  features: PlanFeature[];
-  cta: string;
-  highlighted?: boolean;
-}
-
-const PLANS: Record<string, PlanInfo> = {
-  free: {
-    name: 'Free',
-    description: 'Perfect for casual file sharing',
+const plans = [
+  {
+    name: 'Free Plan',
+    subtitle: 'For casual',
     price: '$0',
-    period: 'forever',
+    period: '',
+    note: 'Forever Free',
+    popular: false,
+    cta: 'Sign up now',
+    ctaHref: '/register',
     features: [
-      { name: 'File size limit: 100MB', included: true },
-      { name: 'Storage duration: 20 minutes', included: true },
-      { name: 'Uploads: 5 per day', included: true },
-      { name: 'Share history: Not included', included: false },
-      { name: 'Download analytics: Not included', included: false },
-      { name: 'Priority support: Not included', included: false },
+      { text: 'Up to 1GB per transfer', included: true },
+      { text: 'Transfer expiry: 3 days', included: true },
+      { text: 'No account required', included: true },
+      { text: 'Unlimited bandwidth', included: true },
+      { text: 'Play/view media & PDFs', included: true },
+      { text: 'Stats & download tracking', included: true },
+      { text: 'Custom download pages', included: false },
+      { text: 'Password protection', included: false },
+      { text: 'Priority support', included: false },
     ],
-    cta: 'Get Started',
   },
-  paid: {
-    name: 'Pro',
-    description: 'For power users and professionals',
-    price: '$4.99',
-    period: 'month',
+  {
+    name: 'Premium Plan',
+    subtitle: 'For hobbyists',
+    price: '$9',
+    period: '/month',
+    note: 'Cancel anytime',
+    popular: true,
+    cta: 'Sign Up for Premium',
+    ctaHref: '/register?plan=premium',
     features: [
-      { name: 'File size limit: 1GB', included: true },
-      { name: 'Storage duration: 24 hours', included: true },
-      { name: 'Uploads: Unlimited', included: true },
-      { name: 'Share history: Included', included: true },
-      { name: 'Download analytics: Included', included: true },
-      { name: 'Priority support: Included', included: true },
+      { text: 'Up to 50GB per transfer', included: true },
+      { text: 'Transfer expiry: 365 days', included: true },
+      { text: 'Account with email login', included: true },
+      { text: 'Unlimited bandwidth', included: true },
+      { text: 'Play/view media & PDFs', included: true },
+      { text: 'Stats & download tracking', included: true },
+      { text: 'Custom download pages', included: true },
+      { text: 'Password protection', included: true },
+      { text: 'Priority support', included: false },
     ],
-    cta: 'Upgrade to Pro',
-    highlighted: true,
   },
-  enterprise: {
-    name: 'Enterprise',
-    description: 'For organizations with custom needs',
-    price: 'Custom',
-    period: 'contact sales',
+  {
+    name: 'Ultra Plan',
+    subtitle: 'For pros',
+    price: '$39',
+    period: '/month',
+    note: 'Cancel anytime',
+    popular: false,
+    cta: 'Sign Up for Ultra',
+    ctaHref: '/register?plan=ultra',
     features: [
-      { name: 'File size limit: Up to 10GB', included: true },
-      { name: 'Storage duration: Up to 30 days', included: true },
-      { name: 'Uploads: Unlimited', included: true },
-      { name: 'Share history: Included', included: true },
-      { name: 'Download analytics: Included', included: true },
-      { name: 'Priority support: Included', included: true },
-      { name: 'Custom branding: Included', included: true },
-      { name: 'API access: Included', included: true },
-      { name: 'Dedicated support: Included', included: true },
+      { text: 'Up to 200GB per transfer', included: true },
+      { text: 'Transfer expiry: Unlimited', included: true },
+      { text: 'Account with email login', included: true },
+      { text: 'Unlimited bandwidth', included: true },
+      { text: 'Play/view media & PDFs', included: true },
+      { text: 'Stats & download tracking', included: true },
+      { text: 'Custom download pages', included: true },
+      { text: 'Password protection', included: true },
+      { text: 'Priority support', included: true },
     ],
-    cta: 'Contact Sales',
   },
-};
+];
 
 export default function PricingPage() {
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-white py-16 px-4">
       {/* Header */}
-      <div className="pt-12 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
-            Simple, Transparent Pricing
-          </h1>
-          <p className="text-xl text-slate-600 mb-8">
-            Choose the perfect plan for your file sharing needs
-          </p>
+      <motion.div
+        className="text-center mb-12"
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'monospace' }}>
+          Simple, transparent{' '}
+          <span style={{ color: '#D4A017' }}>pricing</span>
+        </h1>
+        <p className="text-gray-500 text-base">No hidden fees. Cancel anytime.</p>
+      </motion.div>
 
-          {/* Billing Toggle */}
-          <div className="flex justify-center items-center gap-4 mb-12">
-            <span className={`text-sm font-medium ${billingPeriod === 'monthly' ? 'text-slate-900' : 'text-slate-600'}`}>
-              Monthly
-            </span>
-            <button
-              onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')}
-              className="relative inline-flex h-8 w-14 items-center rounded-full bg-slate-300"
-            >
-              <span
-                className={`inline-block h-6 w-6 transform rounded-full bg-white transition ${
-                  billingPeriod === 'yearly' ? 'translate-x-7' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            <span className={`text-sm font-medium ${billingPeriod === 'yearly' ? 'text-slate-900' : 'text-slate-600'}`}>
-              Yearly
-              <span className="ml-2 inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
-                Save 20%
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Pricing Cards */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="grid md:grid-cols-3 gap-8">
-          {Object.entries(PLANS).map(([key, plan]) => (
-            <div
-              key={key}
-              className={`relative rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105 ${
-                plan.highlighted
-                  ? 'md:scale-105 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-500'
-                  : 'bg-white border border-slate-200'
-              }`}
-            >
-              {/* Highlighted Badge */}
-              {plan.highlighted && (
-                <div className="absolute top-0 right-0 bg-blue-500 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
-                  Most Popular
-                </div>
-              )}
-
-              <div className="p-8">
-                {/* Plan Name */}
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">{plan.name}</h3>
-                <p className="text-slate-600 text-sm mb-6">{plan.description}</p>
-
-                {/* Price */}
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold text-slate-900">{plan.price}</span>
-                    {plan.period !== 'contact sales' && (
-                      <span className="text-slate-600">/{plan.period}</span>
-                    )}
-                  </div>
-                  {billingPeriod === 'yearly' && key === 'paid' && (
-                    <p className="text-sm text-green-600 mt-2">$49.99/year (save $10)</p>
-                  )}
-                </div>
-
-                {/* CTA Button */}
-                <Link
-                  href={key === 'free' ? '/' : key === 'paid' ? '/dashboard' : '/enterprise'}
-                  className={`block w-full py-3 px-4 rounded-lg font-semibold text-center transition mb-8 ${
-                    plan.highlighted
-                      ? 'bg-blue-500 text-white hover:bg-blue-600'
-                      : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
-                  }`}
-                >
-                  {plan.cta}
-                </Link>
-
-                {/* Features List */}
-                <div className="space-y-4">
-                  <p className="text-sm font-semibold text-slate-900 mb-4">Features:</p>
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                        feature.included
-                          ? 'bg-green-100'
-                          : 'bg-slate-100'
-                      }`}>
-                        {feature.included ? (
-                          <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          <svg className="w-3 h-3 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
-                      <span className={`text-sm ${
-                        feature.included ? 'text-slate-900' : 'text-slate-500'
-                      }`}>
-                        {feature.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+      {/* Cards */}
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        {plans.map((plan, i) => (
+          <motion.div
+            key={plan.name}
+            className="relative rounded-2xl flex flex-col"
+            style={{
+              border: plan.popular ? '2px solid #D4A017' : '1px solid #e5e7eb',
+              background: '#fff',
+              boxShadow: plan.popular
+                ? '0 8px 32px rgba(212,160,23,0.15)'
+                : '0 2px 12px rgba(0,0,0,0.06)',
+            }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.1 }}
+          >
+            {/* Most Popular badge */}
+            {plan.popular && (
+              <div
+                className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1 rounded-full text-xs font-bold text-white tracking-widest uppercase"
+                style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
+              >
+                Most Popular
               </div>
+            )}
+
+            <div className="p-7 flex flex-col flex-1">
+              {/* Plan name */}
+              <div className="mb-5">
+                <h2 className="text-xl font-bold text-gray-900">{plan.name}</h2>
+                <p className="text-sm text-gray-400 mt-0.5">{plan.subtitle}</p>
+              </div>
+
+              {/* Price */}
+              <div className="mb-1">
+                <span
+                  className="text-5xl font-extrabold"
+                  style={{ color: '#D4A017' }}
+                >
+                  {plan.price}
+                </span>
+                {plan.period && (
+                  <span className="text-gray-500 text-base ml-1">{plan.period}</span>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 mb-6">{plan.note}</p>
+
+              {/* Features */}
+              <ul className="space-y-3 mb-8 flex-1">
+                {plan.features.map((f) => (
+                  <li key={f.text} className="flex items-start gap-2.5">
+                    {f.included ? (
+                      <Check
+                        className="w-4 h-4 flex-shrink-0 mt-0.5"
+                        style={{ color: '#D4A017' }}
+                      />
+                    ) : (
+                      <X className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-300" />
+                    )}
+                    <span
+                      className={`text-sm ${f.included ? 'text-gray-700' : 'text-gray-300'}`}
+                    >
+                      {f.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <MagneticButton
+                as="a"
+                href={plan.ctaHref}
+                className="w-full text-center py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                style={
+                  plan.popular
+                    ? {
+                        background: 'linear-gradient(to right, #F5C842, #D4A017)',
+                        color: '#fff',
+                      }
+                    : {
+                        border: '1.5px solid #D4A017',
+                        color: '#D4A017',
+                        background: 'transparent',
+                      }
+                }
+              >
+                {plan.cta}
+              </MagneticButton>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Comparison Table */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="px-8 py-12">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">Detailed Comparison</h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-4 px-4 font-semibold text-slate-900">Feature</th>
-                    <th className="text-center py-4 px-4 font-semibold text-slate-900">Free</th>
-                    <th className="text-center py-4 px-4 font-semibold text-slate-900">Pro</th>
-                    <th className="text-center py-4 px-4 font-semibold text-slate-900">Enterprise</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-4 px-4 text-slate-900 font-medium">Max File Size</td>
-                    <td className="text-center py-4 px-4 text-slate-600">100 MB</td>
-                    <td className="text-center py-4 px-4 text-slate-600">1 GB</td>
-                    <td className="text-center py-4 px-4 text-slate-600">10 GB</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-4 px-4 text-slate-900 font-medium">Storage Duration</td>
-                    <td className="text-center py-4 px-4 text-slate-600">20 minutes</td>
-                    <td className="text-center py-4 px-4 text-slate-600">24 hours</td>
-                    <td className="text-center py-4 px-4 text-slate-600">30 days</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-4 px-4 text-slate-900 font-medium">Daily Uploads</td>
-                    <td className="text-center py-4 px-4 text-slate-600">5</td>
-                    <td className="text-center py-4 px-4 text-slate-600">Unlimited</td>
-                    <td className="text-center py-4 px-4 text-slate-600">Unlimited</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-4 px-4 text-slate-900 font-medium">Share History</td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-slate-300 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-4 px-4 text-slate-900 font-medium">Analytics</td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-slate-300 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-4 px-4 text-slate-900 font-medium">Priority Support</td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-slate-300 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 px-4 text-slate-900 font-medium">Custom Branding</td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-slate-300 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-slate-300 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <svg className="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* FAQ Section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Frequently Asked Questions</h2>
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">Can I upgrade or downgrade my plan?</h3>
-            <p className="text-slate-600">Yes, you can change your plan at any time. Changes take effect immediately.</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">What payment methods do you accept?</h3>
-            <p className="text-slate-600">We accept all major credit cards through Stripe. Invoicing is available for enterprise customers.</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">Is there a free trial for Pro?</h3>
-            <p className="text-slate-600">Yes, we offer a 7-day free trial for new Pro users. No credit card required.</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">What happens to my files if I downgrade?</h3>
-            <p className="text-slate-600">Your existing files remain accessible until they expire. New uploads will follow your new plan's limits.</p>
-          </div>
-        </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
