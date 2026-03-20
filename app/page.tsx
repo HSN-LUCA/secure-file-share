@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
-import { Upload, X, CheckCircle, Download, Search } from 'lucide-react';
+import { Upload, X, CheckCircle, Download, Search, Copy, Share2 } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
 
 interface FileInfo {
@@ -154,6 +154,22 @@ export default function Home() {
 
   const successResults = results.filter(r => r.shareCode);
   const failedResults = results.filter(r => !r.shareCode);
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const shareCode2 = async (code: string) => {
+    if (navigator.share) {
+      await navigator.share({ title: 'File Share Code', text: `Your share code: ${code}` });
+    } else {
+      copyCode(code);
+    }
+  };
 
   if (results.length > 0) {
     const groupCode = successResults[0]?.shareCode || '';
@@ -182,7 +198,27 @@ export default function Home() {
               transition={{ delay: 0.1 }}
             >
               <p className="text-sm text-gray-500 mb-2">Share code for all files</p>
-              <p className="text-4xl font-mono font-bold tracking-widest" style={{ color: '#D4A017' }}>{groupCode}</p>
+              <div className="flex items-center justify-center gap-3">
+                <p className="text-4xl font-mono font-bold tracking-widest" style={{ color: '#D4A017' }}>{groupCode}</p>
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={() => copyCode(groupCode)}
+                    title="Copy code"
+                    className="p-1.5 rounded-lg transition-colors hover:bg-yellow-100"
+                    style={{ color: copied ? '#22c55e' : '#D4A017' }}
+                  >
+                    {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                  <button
+                    onClick={() => shareCode2(groupCode)}
+                    title="Share code"
+                    className="p-1.5 rounded-lg transition-colors hover:bg-yellow-100"
+                    style={{ color: '#D4A017' }}
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
               <p className="text-xs text-gray-400 mt-2">Use this code to download all {successResults.length} file{successResults.length > 1 ? 's' : ''}</p>
             </motion.div>
           )}
