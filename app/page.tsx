@@ -2,8 +2,23 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
-import { Upload, X, CheckCircle } from 'lucide-react';
+import { Upload, X, CheckCircle, Download, Search } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
+
+interface FileInfo {
+  id?: string;
+  fileName: string;
+  fileSize: number;
+  expiresAt: string;
+}
+
+interface LookupResult {
+  isGroup: boolean;
+  files?: FileInfo[];
+  fileName?: string;
+  fileSize?: number;
+  expiresAt?: string;
+}
 
 interface UploadResult {
   fileName: string;
@@ -47,6 +62,38 @@ export default function Home() {
   const [results, setResults] = useState<UploadResult[]>([]);
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Download lookup state
+  const [shareCode, setShareCode] = useState('');
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupError, setLookupError] = useState('');
+  const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
+
+  const handleLookup = async () => {
+    const code = shareCode.trim();
+    if (!code) return;
+    setLookupLoading(true);
+    setLookupError('');
+    setLookupResult(null);
+    try {
+      const res = await fetch(`/api/download/${code}?info=true`);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setLookupError(data.error || 'File not found');
+      } else {
+        setLookupResult(data);
+      }
+    } catch {
+      setLookupError('Something went wrong. Try again.');
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    return (bytes / 1024).toFixed(0) + ' KB';
+  };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files || []);
@@ -320,25 +367,85 @@ export default function Home() {
 
           {/* Download card */}
           <div
-            className="w-full rounded-2xl px-6 py-5 flex flex-col items-center gap-4 text-center"
+            className="w-full rounded-2xl px-6 py-6 flex flex-col gap-4"
             style={{ background: 'linear-gradient(135deg, #FEF9E7 0%, #FFFDF5 100%)', border: '1px solid #E8C547' }}
           >
-            <div className="flex flex-col items-center gap-1">
+            <div className="text-center">
               <p className="text-base font-semibold text-gray-800">Have a code number?</p>
-              <p className="text-sm text-gray-500">Enter your share code to download files instantly</p>
+              <p className="text-sm text-gray-500">Enter your share code to find your files</p>
             </div>
 
+            {/* Code input */}
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="Enter 6-digit code"
+              value={shareCode}
+              onChange={e => { setShareCode(e.target.value); setLookupResult(null); setLookupError(''); }}
+              onKeyDown={e => e.key === 'Enter' && handleLookup()}
+              maxLength={10}
+              className="w-full text-center text-2xl font-mono font-bold tracking-widest rounded-xl px-4 py-3 outline-none border-2 transition-colors"
+              style={{ borderColor: shareCode ? '#D4A017' : '#E8C547', color: '#D4A017', background: '#fff' }}
+            />
+
             <MagneticButton
-              as="a"
-              href="/download"
-              className="flex items-center gap-2 px-10 py-4 rounded-xl text-base font-semibold transition-opacity hover:opacity-90"
+              onClick={handleLookup}
+              disabled={lookupLoading || !shareCode.trim()}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
               style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)', color: '#ffffff' }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
-              </svg>
-              Download a File
+              <Search className="w-4 h-4" />
+              {lookupLoading ? 'Searching...' : 'Find'}
             </MagneticButton>
+
+            {lookupError && (
+              <p className="text-sm text-red-500 text-center">{lookupError}</p>
+            )}
+
+            <AnimatePresence>
+              {lookupResult && (
+                <motion.div
+                  className="flex flex-col gap-2"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {lookupResult.isGroup && lookupResult.files ? (
+                    lookupResult.files.map((f, i) => (
+                      <div key={f.id || i} className="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm" style={{ border: '1px solid #E8C547' }}>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-800 truncate">{f.fileName}</p>
+                          <p className="text-xs text-gray-400">{formatSize(f.fileSize)}</p>
+                        </div>
+                        <a
+                          href={`/api/download/${shareCode.trim()}?fileId=${f.id}`}
+                          className="ml-3 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
+                          style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
+                        >
+                          <Download className="w-3 h-3" />
+                          Download
+                        </a>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm" style={{ border: '1px solid #E8C547' }}>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-800 truncate">{lookupResult.fileName}</p>
+                        <p className="text-xs text-gray-400">{formatSize(lookupResult.fileSize || 0)}</p>
+                      </div>
+                      <a
+                        href={`/api/download/${shareCode.trim()}`}
+                        className="ml-3 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
+                        style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
+                      >
+                        <Download className="w-3 h-3" />
+                        Download
+                      </a>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>
