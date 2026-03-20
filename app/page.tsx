@@ -303,6 +303,44 @@ export default function Home() {
         >
           Select multiple files — one shared code for all
         </motion.p>
+
+        {/* Divider + Download section */}
+        <motion.div
+          className="w-full mt-10 flex flex-col items-center"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          {/* Divider */}
+          <div className="flex items-center gap-3 w-full mb-8">
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, #E8C547)' }} />
+            <span className="text-xs text-gray-400 font-medium tracking-widest uppercase">or</span>
+            <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, #E8C547)' }} />
+          </div>
+
+          {/* Download card */}
+          <div
+            className="w-full rounded-2xl px-6 py-5 flex flex-col items-center gap-4 text-center"
+            style={{ background: 'linear-gradient(135deg, #FEF9E7 0%, #FFFDF5 100%)', border: '1px solid #E8C547' }}
+          >
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-base font-semibold text-gray-800">Have a code number?</p>
+              <p className="text-sm text-gray-500">Enter your share code to download files instantly</p>
+            </div>
+
+            <MagneticButton
+              as="a"
+              href="/download"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              Download a File
+            </MagneticButton>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );
