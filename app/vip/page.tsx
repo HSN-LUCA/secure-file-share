@@ -7,8 +7,8 @@ import MagneticButton from '@/components/ui/MagneticButton';
 
 // VIP theme palette
 const VIP = {
-  primary: '#92722b',
-  primaryLight: '#b8924a',
+  primary: '#b28c37',
+  primaryLight: '#c9a455',
   bg: '#f9f7ed',
   bgDeep: '#f2eed8',
   border: '#d4c48a',
