@@ -264,19 +264,6 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Hero — logo + tagline */}
-        <motion.div
-          className="flex flex-col items-center mb-6"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <img src="/logo.png" alt="HodHod" className="w-36 h-36 object-contain" />
-          <p className="text-sm font-medium tracking-wide mt-1" style={{ color: '#D4A017' }}>
-            Send files secure
-          </p>
-        </motion.div>
-
         {/* Upload circle */}
         <motion.div
           className="relative w-48 h-48 mb-8 cursor-pointer"
