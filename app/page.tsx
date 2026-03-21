@@ -165,7 +165,7 @@ export default function Home() {
 
   const shareCode2 = async (code: string) => {
     if (navigator.share) {
-      await navigator.share({ title: 'File Share Code', text: `Your share code: ${code}` });
+      await navigator.share({ title: 'HodHod — File Share Code', text: `Your HodHod share code: ${code}` });
     } else {
       copyCode(code);
     }
@@ -272,11 +272,10 @@ export default function Home() {
           transition={{ duration: 0.5 }}
         >
           <h1 className="text-4xl font-bold mb-1" style={{ fontFamily: 'monospace' }}>
-            <span className="text-gray-900">Send files </span>
-            <span style={{ color: '#D4A017' }}>fast</span>
+            <span style={{ color: '#D4A017' }}>HodHod</span>
           </h1>
           <p className="text-gray-500 text-sm" style={{ fontFamily: 'monospace' }}>
-            Up to <span className="font-bold" style={{ background: 'linear-gradient(to right, #D4A017, #F5C842)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>1 GB</span> for free users
+            Send files <span className="font-bold" style={{ background: 'linear-gradient(to right, #D4A017, #F5C842)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>fast</span> — up to 1 GB free
           </p>
         </motion.div>
 

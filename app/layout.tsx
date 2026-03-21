@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Secure File Share",
-  description: "Share files securely with unique numeric codes",
+  title: "HodHod",
+  description: "Send files fast and securely with HodHod",
   icons: {
     icon: "/favicon.ico",
   },

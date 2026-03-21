@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
     <footer className="border-t border-neutral-200 dark:border-neutral-700 py-4">
       <div className="container mx-auto px-4 text-center">
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          © {currentYear} Secure File Share. All rights reserved.
+          © {currentYear} HodHod. All rights reserved.
         </p>
       </div>
     </footer>
