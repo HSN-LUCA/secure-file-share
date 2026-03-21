@@ -264,18 +264,16 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Hero text */}
+        {/* Hero — logo + tagline */}
         <motion.div
-          className="text-center mb-6"
+          className="flex flex-col items-center mb-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl font-bold mb-1" style={{ fontFamily: 'monospace' }}>
-            <span style={{ color: '#D4A017' }}>HodHod</span>
-          </h1>
-          <p className="text-gray-500 text-sm" style={{ fontFamily: 'monospace' }}>
-            Send files <span className="font-bold" style={{ background: 'linear-gradient(to right, #D4A017, #F5C842)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>fast</span> — up to 1 GB free
+          <img src="/logo.png" alt="HodHod" className="w-36 h-36 object-contain" />
+          <p className="text-sm font-medium tracking-wide mt-1" style={{ color: '#D4A017' }}>
+            Send files secure
           </p>
         </motion.div>
 
