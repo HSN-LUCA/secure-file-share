@@ -63,11 +63,11 @@ export default function Home() {
   const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Download lookup state
   const [shareCode, setShareCode] = useState('');
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState('');
   const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleLookup = async () => {
     const code = shareCode.trim();
@@ -116,10 +116,8 @@ export default function Home() {
     setUploading(true);
     setUploadError('');
     setResults([]);
-
     const uploadResults: UploadResult[] = [];
     const groupCode = generateGroupCode();
-
     for (const file of files) {
       try {
         const captchaToken = await getCaptchaToken();
@@ -127,10 +125,8 @@ export default function Home() {
         formData.append('file', file);
         formData.append('captcha_token', captchaToken);
         formData.append('share_number', groupCode);
-
         const response = await fetch('/api/upload', { method: 'POST', body: formData });
         const data = await response.json();
-
         if (data.shareCode) {
           uploadResults.push({ fileName: file.name, shareCode: data.shareCode });
         } else {
@@ -140,21 +136,15 @@ export default function Home() {
         uploadResults.push({ fileName: file.name, shareCode: '', error: 'Upload failed' });
       }
     }
-
     setResults(uploadResults);
     setFiles([]);
     setUploading(false);
   };
 
-  const reset = () => {
-    setResults([]);
-    setFiles([]);
-    setUploadError('');
-  };
+  const reset = () => { setResults([]); setFiles([]); setUploadError(''); };
 
   const successResults = results.filter(r => r.shareCode);
   const failedResults = results.filter(r => !r.shareCode);
-  const [copied, setCopied] = useState(false);
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
@@ -171,50 +161,36 @@ export default function Home() {
     }
   };
 
+  // ── Success screen ──────────────────────────────────────────────────────────
   if (results.length > 0) {
     const groupCode = successResults[0]?.shareCode || '';
-
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-8">
-        <motion.div
-          className="w-full max-w-sm sm:max-w-md"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-        >
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8"
+        style={{ background: 'linear-gradient(135deg, #fdf6ec 0%, #faf4f0 50%, #f5f0f8 100%)' }}>
+        <motion.div className="w-full max-w-sm sm:max-w-md"
+          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="text-2xl font-bold text-center mb-2" style={{ color: '#1a1a2e' }}>
             {successResults.length} of {results.length} file{results.length > 1 ? 's' : ''} uploaded
           </h2>
-
           {groupCode && (
-            <motion.div
-              className="rounded-xl p-6 mb-4 text-center"
-              style={{ backgroundColor: '#FEF9E7' }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
+            <motion.div className="rounded-xl p-6 mb-4 text-center bg-white shadow-sm"
+              style={{ border: '1px solid #E8C547' }}
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <p className="text-sm text-gray-500 mb-2">Share code for all files</p>
               <div className="flex items-center justify-center gap-3">
                 <p className="text-4xl font-mono font-bold tracking-widest" style={{ color: '#D4A017' }}>{groupCode}</p>
                 <div className="flex flex-col gap-1">
-                  <button
-                    onClick={() => copyCode(groupCode)}
-                    title="Copy code"
-                    className="p-1.5 rounded-lg transition-colors hover:bg-yellow-100"
-                    style={{ color: copied ? '#22c55e' : '#D4A017' }}
-                  >
+                  <button onClick={() => copyCode(groupCode)} title="Copy code"
+                    className="p-1.5 rounded-lg transition-colors hover:bg-yellow-50"
+                    style={{ color: copied ? '#22c55e' : '#D4A017' }}>
                     {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </button>
-                  <button
-                    onClick={() => shareCode2(groupCode)}
-                    title="Share code"
-                    className="p-1.5 rounded-lg transition-colors hover:bg-yellow-100"
-                    style={{ color: '#D4A017' }}
-                  >
+                  <button onClick={() => shareCode2(groupCode)} title="Share code"
+                    className="p-1.5 rounded-lg transition-colors hover:bg-yellow-50"
+                    style={{ color: '#D4A017' }}>
                     <Share2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -222,16 +198,10 @@ export default function Home() {
               <p className="text-xs text-gray-400 mt-2">Use this code to download all {successResults.length} file{successResults.length > 1 ? 's' : ''}</p>
             </motion.div>
           )}
-
           <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
             {successResults.map((r, i) => (
-              <motion.div
-                key={i}
-                className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 + i * 0.05 }}
-              >
+              <motion.div key={i} className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm"
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + i * 0.05 }}>
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                 <p className="text-sm text-gray-700 truncate">{r.fileName}</p>
               </motion.div>
@@ -243,12 +213,8 @@ export default function Home() {
               </div>
             ))}
           </div>
-
-          <MagneticButton
-            className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-colors"
-            style={{ backgroundColor: '#D4A017' }}
-            onClick={reset}
-          >
+          <MagneticButton className="w-full px-6 py-3 text-white font-semibold rounded-xl transition-colors"
+            style={{ backgroundColor: '#D4A017' }} onClick={reset}>
             Upload More Files
           </MagneticButton>
         </motion.div>
@@ -256,210 +222,209 @@ export default function Home() {
     );
   }
 
+  // ── Main page ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-8">
-      <motion.div
-        className="flex flex-col items-center justify-center w-full max-w-sm sm:max-w-md"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Upload circle */}
-        <motion.div
-          className="relative w-48 h-48 mb-8 cursor-pointer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <motion.svg
-            className="absolute inset-0 w-full h-full"
-            viewBox="0 0 200 200"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' as const }}
-          >
-            <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#F5C842" />
-                <stop offset="50%" stopColor="#D4A017" />
-                <stop offset="100%" stopColor="#F5C842" />
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="100" r="95" fill="none" stroke="url(#gradient)" strokeWidth="3" />
-          </motion.svg>
+    <div className="min-h-screen flex flex-col overflow-x-hidden"
+      style={{ background: 'linear-gradient(135deg, #fdf6ec 0%, #faf4f0 50%, #f5f0f8 100%)' }}>
 
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-40 h-40 rounded-full flex flex-col items-center justify-center shadow-lg"
-              style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
-              <Upload className="w-14 h-14 text-white mb-2" />
-              <div className="text-white text-center">
-                <p className="text-base font-bold">Browse Files</p>
-              </div>
-            </div>
+      {/* Ambient color blobs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-30"
+          style={{ background: 'radial-gradient(circle, #f5c842 0%, transparent 70%)' }} />
+        <div className="absolute top-20 -right-20 w-80 h-80 rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, #e8a0bf 0%, transparent 70%)' }} />
+        <div className="absolute bottom-40 left-1/4 w-72 h-72 rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
+      </div>
+
+      {/* Nav */}
+      <nav className="relative z-10 flex items-center justify-between px-6 sm:px-12 py-5">
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
+            <span className="text-white font-bold text-sm">H</span>
           </div>
+          <div>
+            <p className="font-bold text-sm leading-none" style={{ color: '#1a1a2e' }}>HodHod</p>
+            <p className="text-xs leading-none" style={{ color: '#9a8c7a' }}>FILE SHARE</p>
+          </div>
+        </div>
+        <div className="hidden sm:flex items-center gap-8">
+          <a href="#" className="text-sm font-medium border-b-2 pb-0.5" style={{ color: '#1a1a2e', borderColor: '#D4A017' }}>Home</a>
+          <a href="#upload" className="text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: '#6b6450' }}>Upload</a>
+          <a href="#find" className="text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: '#6b6450' }}>Find File</a>
+        </div>
+        <MagneticButton
+          onClick={() => fileInputRef.current?.click()}
+          className="px-5 py-2 rounded-xl text-sm font-semibold text-white shadow-md"
+          style={{ background: '#1a1a2e' }}>
+          Get Started
+        </MagneticButton>
+      </nav>
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            onChange={handleFileInputChange}
-            className="hidden"
-            aria-label="Select files to upload"
-          />
+      {/* Hero */}
+      <section className="relative z-10 flex flex-col items-center text-center px-6 pt-12 pb-16">
+        <motion.div
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-xs font-medium"
+          style={{ background: 'rgba(212,160,23,0.12)', color: '#b28c37', border: '1px solid rgba(212,160,23,0.25)' }}
+          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
+          Now Available
         </motion.div>
 
-        {/* File list */}
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div
-              className="w-full mb-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="bg-gray-50 rounded-lg p-3 mb-4 max-h-48 overflow-y-auto space-y-2">
-                {files.map((f, i) => (
-                  <motion.div
-                    key={f.name}
-                    className="flex items-center justify-between bg-white rounded-md px-3 py-2 shadow-sm"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ delay: i * 0.04 }}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
-                      <p className="text-xs text-gray-400">{(f.size / (1024 * 1024)).toFixed(2)} MB</p>
-                    </div>
-                    <button
-                      onClick={() => removeFile(i)}
-                      className="ml-2 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
-                      aria-label={`Remove ${f.name}`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-
-              <p className="text-xs text-gray-400 text-center mb-3">
-                {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
-              </p>
-
-              <MagneticButton
-                onClick={handleUpload}
-                disabled={uploading}
-                className="w-full px-6 py-4 text-white font-bold text-lg rounded-xl hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-3"
-                style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)', boxShadow: '0 4px 20px rgba(212,160,23,0.35)' }}
-              >
-                <Upload className="w-5 h-5" />
-                {uploading ? `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...` : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}
-              </MagneticButton>
-
-              {uploadError && (
-                <p className="mt-3 text-sm text-red-600 text-center">{uploadError}</p>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <motion.h1
+          className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-3 max-w-2xl"
+          style={{ color: '#1a1a2e', fontFamily: 'Georgia, "Times New Roman", serif' }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
+          Send Files with Code
+        </motion.h1>
 
         <motion.p
-          className="text-gray-400 text-xs mt-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          Select multiple files — one shared code for all
+          className="text-4xl sm:text-5xl md:text-6xl font-bold italic mb-6 max-w-2xl"
+          style={{ color: '#8a9bb5', fontFamily: 'Georgia, "Times New Roman", serif' }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
+          Fast, Easy, Secure.
         </motion.p>
 
-        {/* Divider + Download section */}
+        <motion.p
+          className="text-sm sm:text-base text-gray-500 max-w-sm leading-relaxed"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.35 }}>
+          Empower your workflow with an elegantly crafted platform that transforms complexity into simplicity.
+        </motion.p>
+      </section>
+
+      {/* Upload + Find section */}
+      <section id="upload" className="relative z-10 flex flex-col items-center px-4 pb-20">
         <motion.div
-          className="w-full mt-10 flex flex-col items-center"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
+          className="w-full max-w-sm sm:max-w-md"
+          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
+
+          {/* Upload circle */}
+          <div className="flex flex-col items-center mb-6">
+            <motion.div
+              className="relative w-44 h-44 cursor-pointer mb-4"
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              onClick={() => fileInputRef.current?.click()}>
+              <motion.svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200"
+                animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' as const }}>
+                <defs>
+                  <linearGradient id="grad-home" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#F5C842" />
+                    <stop offset="50%" stopColor="#D4A017" />
+                    <stop offset="100%" stopColor="#F5C842" />
+                  </linearGradient>
+                </defs>
+                <circle cx="100" cy="100" r="95" fill="none" stroke="url(#grad-home)" strokeWidth="3" />
+              </motion.svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-36 h-36 rounded-full flex flex-col items-center justify-center shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
+                  <Upload className="w-12 h-12 text-white mb-1" />
+                  <p className="text-white text-sm font-bold">Browse Files</p>
+                </div>
+              </div>
+              <input ref={fileInputRef} type="file" multiple onChange={handleFileInputChange}
+                className="hidden" aria-label="Select files to upload" />
+            </motion.div>
+            <p className="text-xs text-gray-400">Select multiple files — one shared code for all</p>
+          </div>
+
+          {/* File list + upload button */}
+          <AnimatePresence>
+            {files.length > 0 && (
+              <motion.div className="w-full mb-6"
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <div className="bg-white rounded-xl p-3 mb-3 max-h-48 overflow-y-auto space-y-2 shadow-sm"
+                  style={{ border: '1px solid #e8e0d0' }}>
+                  {files.map((f, i) => (
+                    <motion.div key={f.name}
+                      className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2"
+                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }} transition={{ delay: i * 0.04 }}>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
+                        <p className="text-xs text-gray-400">{(f.size / (1024 * 1024)).toFixed(2)} MB</p>
+                      </div>
+                      <button onClick={() => removeFile(i)}
+                        className="ml-2 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                        aria-label={`Remove ${f.name}`}>
+                        <X className="w-4 h-4" />
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 text-center mb-3">
+                  {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
+                </p>
+                <MagneticButton onClick={handleUpload} disabled={uploading}
+                  className="w-full px-6 py-4 text-white font-bold text-lg rounded-xl hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-3"
+                  style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)', boxShadow: '0 4px 20px rgba(212,160,23,0.35)' }}>
+                  <Upload className="w-5 h-5" />
+                  {uploading ? `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...` : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}
+                </MagneticButton>
+                {uploadError && <p className="mt-3 text-sm text-red-600 text-center">{uploadError}</p>}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Divider */}
-          <div className="flex items-center gap-3 w-full mb-8">
+          <div className="flex items-center gap-3 w-full my-6">
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, #E8C547)' }} />
             <span className="text-base font-bold text-gray-900">or</span>
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, #E8C547)' }} />
           </div>
 
-          {/* Download card */}
-          <div
-            className="w-full rounded-2xl px-6 py-6 flex flex-col gap-4"
-            style={{ background: 'linear-gradient(135deg, #FEF9E7 0%, #FFFDF5 100%)', border: '1px solid #E8C547' }}
-          >
+          {/* Find file card */}
+          <div id="find" className="w-full rounded-2xl px-6 py-6 flex flex-col gap-4 bg-white shadow-sm"
+            style={{ border: '1px solid #E8C547' }}>
             <div className="text-center">
-              <p className="text-base font-semibold text-gray-800">Have a code number?</p>
+              <p className="text-base font-semibold" style={{ color: '#1a1a2e' }}>Have a code number?</p>
               <p className="text-sm text-gray-500">Enter your share code to find your files</p>
             </div>
-
-            {/* Code input */}
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="Enter 6-digit code"
+            <input type="text" inputMode="numeric" placeholder="Enter 6-digit code"
               value={shareCode}
               onChange={e => { setShareCode(e.target.value); setLookupResult(null); setLookupError(''); }}
               onKeyDown={e => e.key === 'Enter' && handleLookup()}
               maxLength={10}
-              className="w-full text-center text-2xl font-mono font-bold tracking-widest rounded-xl px-4 py-3 outline-none border-2 transition-colors"
-              style={{ borderColor: shareCode ? '#D4A017' : '#E8C547', color: '#D4A017', background: '#fff' }}
-            />
-
-            <MagneticButton
-              onClick={handleLookup}
-              disabled={lookupLoading || !shareCode.trim()}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)', color: '#ffffff' }}
-            >
+              className="w-full text-center text-2xl font-mono font-bold tracking-widest rounded-xl px-4 py-3 outline-none border-2 transition-colors bg-gray-50"
+              style={{ borderColor: shareCode ? '#D4A017' : '#E8C547', color: '#D4A017' }} />
+            <MagneticButton onClick={handleLookup} disabled={lookupLoading || !shareCode.trim()}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 text-white"
+              style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
               <Search className="w-4 h-4" />
               {lookupLoading ? 'Searching...' : 'Find'}
             </MagneticButton>
-
-            {lookupError && (
-              <p className="text-sm text-red-500 text-center">{lookupError}</p>
-            )}
-
+            {lookupError && <p className="text-sm text-red-500 text-center">{lookupError}</p>}
             <AnimatePresence>
               {lookupResult && (
-                <motion.div
-                  className="flex flex-col gap-2"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
+                <motion.div className="flex flex-col gap-2"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                   {lookupResult.isGroup && lookupResult.files ? (
                     lookupResult.files.map((f, i) => (
-                      <div key={f.id || i} className="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm" style={{ border: '1px solid #E8C547' }}>
+                      <div key={f.id || i} className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
+                        style={{ border: '1px solid #E8C547' }}>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-gray-800 truncate">{f.fileName}</p>
                           <p className="text-xs text-gray-400">{formatSize(f.fileSize)}</p>
                         </div>
-                        <a
-                          href={`/api/download/${shareCode.trim()}?fileId=${f.id}`}
+                        <a href={`/api/download/${shareCode.trim()}?fileId=${f.id}`}
                           className="ml-3 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
-                          style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
-                        >
-                          <Download className="w-3 h-3" />
-                          Download
+                          style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+                          <Download className="w-3 h-3" />Download
                         </a>
                       </div>
                     ))
                   ) : (
-                    <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm" style={{ border: '1px solid #E8C547' }}>
+                    <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
+                      style={{ border: '1px solid #E8C547' }}>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-gray-800 truncate">{lookupResult.fileName}</p>
                         <p className="text-xs text-gray-400">{formatSize(lookupResult.fileSize || 0)}</p>
                       </div>
-                      <a
-                        href={`/api/download/${shareCode.trim()}`}
+                      <a href={`/api/download/${shareCode.trim()}`}
                         className="ml-3 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
-                        style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
-                      >
-                        <Download className="w-3 h-3" />
-                        Download
+                        style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+                        <Download className="w-3 h-3" />Download
                       </a>
                     </div>
                   )}
@@ -468,7 +433,7 @@ export default function Home() {
             </AnimatePresence>
           </div>
         </motion.div>
-      </motion.div>
+      </section>
     </div>
   );
 }
