@@ -77,9 +77,9 @@ export default function DownloadPage() {
   const formatSize = (bytes: number) => (bytes / (1024 * 1024)).toFixed(2) + ' MB';
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-8">
       <motion.div
-        className="w-full max-w-sm sm:max-w-md"
+        className="w-full max-w-xs sm:max-w-sm md:max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -87,23 +87,23 @@ export default function DownloadPage() {
         {!result ? (
           <div>
             <motion.div
-              className="text-center mb-8"
+              className="text-center mb-6 sm:mb-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Download Files</h1>
-              <p className="text-gray-600">Enter your share code to find files</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Download Files</h1>
+              <p className="text-sm sm:text-base text-gray-600">Enter your share code to find files</p>
             </motion.div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <input
                 type="text"
                 placeholder="Enter share code"
                 value={shareCode}
                 onChange={(e) => { setShareCode(e.target.value); setError(''); }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="w-full px-6 py-3 border-2 rounded-lg focus:outline-none text-center text-lg placeholder-gray-400"
+                className="w-full px-4 sm:px-6 py-2 sm:py-3 border-2 rounded-lg focus:outline-none text-center text-lg sm:text-xl placeholder-gray-400 min-h-12"
                 style={{ borderColor: '#E8C547' }}
                 onFocus={e => (e.currentTarget.style.borderColor = '#D4A017')}
                 onBlur={e => (e.currentTarget.style.borderColor = '#E8C547')}
@@ -112,18 +112,18 @@ export default function DownloadPage() {
 
               {error && (
                 <motion.div
-                  className="bg-red-50 border border-red-200 rounded-lg p-4"
+                  className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <p className="text-red-700 text-sm">{error}</p>
+                  <p className="text-red-700 text-xs sm:text-sm">{error}</p>
                 </motion.div>
               )}
 
               <motion.button
                 onClick={handleSearch}
                 disabled={searching}
-                className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2 min-h-12 sm:min-h-14"
                 style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -140,32 +140,32 @@ export default function DownloadPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            <div className="text-center mb-4 sm:mb-6">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4"
                 style={{ backgroundColor: '#FEF9E7' }}>
-                <Download className="w-8 h-8" style={{ color: '#D4A017' }} />
+                <Download className="w-7 h-7 sm:w-8 sm:h-8" style={{ color: '#D4A017' }} />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{result.files.length} Files Found</h2>
-              <p className="text-gray-500 text-sm mt-1">Share code: <span className="font-mono font-bold" style={{ color: '#D4A017' }}>{shareCode}</span></p>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{result.files.length} Files Found</h2>
+              <p className="text-gray-500 text-xs sm:text-sm mt-1">Share code: <span className="font-mono font-bold" style={{ color: '#D4A017' }}>{shareCode}</span></p>
             </div>
 
-            <div className="space-y-2 mb-6 max-h-72 overflow-y-auto">
+            <div className="space-y-2 mb-4 sm:mb-6 max-h-64 sm:max-h-72 overflow-y-auto">
               {result.files.map((f, i) => (
                 <motion.div
                   key={f.id}
-                  className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3"
+                  className="flex items-center justify-between bg-gray-50 rounded-lg px-3 sm:px-4 py-2 sm:py-3 gap-2"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-900 truncate">{f.fileName}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">{f.fileName}</p>
                     <p className="text-xs text-gray-400">{formatSize(f.fileSize)}</p>
                   </div>
                   <button
                     onClick={() => downloadFile(shareCode.trim(), f.fileName, f.id)}
                     disabled={downloading === f.fileName}
-                    className="ml-3 flex-shrink-0 p-2 text-white rounded-lg transition-colors disabled:opacity-50"
+                    className="ml-2 flex-shrink-0 p-2 text-white rounded-lg transition-colors disabled:opacity-50 min-h-10 flex items-center justify-center"
                     style={{ backgroundColor: '#D4A017' }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#B8860B')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#D4A017')}
@@ -182,7 +182,7 @@ export default function DownloadPage() {
 
             <motion.button
               onClick={() => { setResult(null); setShareCode(''); setError(''); }}
-              className="w-full px-6 py-3 border-2 font-semibold rounded-lg transition-colors"
+              className="w-full px-4 sm:px-6 py-3 sm:py-4 border-2 font-semibold rounded-lg transition-colors min-h-12"
               style={{ borderColor: '#E8C547', color: '#D4A017' }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FEF9E7')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -200,32 +200,32 @@ export default function DownloadPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
               style={{ backgroundColor: '#FEF9E7' }}>
-              <Download className="w-10 h-10" style={{ color: '#D4A017' }} />
+              <Download className="w-7 h-7 sm:w-10 sm:h-10" style={{ color: '#D4A017' }} />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">File Found!</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">File Found!</h2>
 
-            <div className="bg-gray-50 rounded-lg p-6 mb-6 text-left space-y-3">
+            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 text-left space-y-3">
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">File Name</p>
-                <p className="text-lg font-semibold text-gray-900 break-all">{result.fileName}</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900 break-all">{result.fileName}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">File Size</p>
-                <p className="text-gray-700">{formatSize(result.fileSize || 0)}</p>
+                <p className="text-sm sm:text-base text-gray-700">{formatSize(result.fileSize || 0)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Expires At</p>
-                <p className="text-gray-700">{new Date(result.expiresAt || '').toLocaleString()}</p>
+                <p className="text-sm sm:text-base text-gray-700">{new Date(result.expiresAt || '').toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <motion.button
                 onClick={() => downloadFile(shareCode.trim(), result.fileName || 'download')}
                 disabled={!!downloading}
-                className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 flex items-center justify-center gap-2 min-h-12 sm:min-h-14"
                 style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -236,7 +236,7 @@ export default function DownloadPage() {
 
               <motion.button
                 onClick={() => { setResult(null); setShareCode(''); setError(''); }}
-                className="w-full px-6 py-3 border-2 font-semibold rounded-lg transition-colors"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 border-2 font-semibold rounded-lg transition-colors min-h-12"
                 style={{ borderColor: '#E8C547', color: '#D4A017' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FEF9E7')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
