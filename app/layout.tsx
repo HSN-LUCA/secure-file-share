@@ -46,14 +46,6 @@ export default function RootLayout({
       >
         <LenisWrapper>
           <div className="flex flex-col min-h-screen">
-            <header className="w-full px-4 py-2 flex items-center bg-white" style={{ borderBottom: '1px solid #F5E9C0' }}>
-              <a href="/" className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ background: '#0D1B2A' }}>
-                  <img src="/logo.png" alt="HodHod" className="w-full h-full object-cover" />
-                </div>
-                <span className="font-bold text-lg" style={{ color: '#D4A017' }}>HodHod</span>
-              </a>
-            </header>
             <main className="flex-1">
               {children}
             </main>
