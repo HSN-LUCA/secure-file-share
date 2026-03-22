@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
 import { Upload, X, CheckCircle, Download, Search, Copy, Share2 } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
+import LuxoraHeader from '@/components/layout/LuxoraHeader';
 
 interface FileInfo {
   id?: string;
@@ -237,61 +238,11 @@ export default function Home() {
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
 
-      {/* Nav — ClickUp-style floating pill */}
-      <div className="relative z-10 flex justify-center px-6 pt-6">
-        <nav className="flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-2xl"
-          style={{
-            background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(220,210,195,0.5)',
-            boxShadow: '0 2px 32px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)',
-          }}>
-          {/* Logo */}
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
-              <span className="text-white font-bold text-sm">H</span>
-            </div>
-            <span className="font-bold text-base" style={{ color: '#1a1a2e' }}>HodHod</span>
-          </div>
+      {/* Header */}
+      <LuxoraHeader onGetStarted={() => fileInputRef.current?.click()} />
 
-          {/* Center links */}
-          <div className="hidden md:flex items-center gap-8">
-            {[
-              { label: 'Home', href: '#' },
-              { label: 'Upload', href: '#upload' },
-              { label: 'Find File', href: '#find' },
-              { label: 'VIP', href: '/vip' },
-            ].map(({ label, href }) => (
-              <a key={label} href={href}
-                className="text-sm font-semibold transition-colors duration-150"
-                style={{ color: '#374151', textDecoration: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#111827')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#374151')}>
-                {label}
-              </a>
-            ))}
-          </div>
-
-          {/* Right CTAs */}
-          <div className="flex items-center gap-3">
-            <a href="#find"
-              className="hidden sm:block text-sm font-semibold transition-colors duration-150"
-              style={{ color: '#374151', textDecoration: 'none' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#111827')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#374151')}>
-              Log in
-            </a>
-            <MagneticButton
-              onClick={() => fileInputRef.current?.click()}
-              className="px-5 py-2 rounded-xl text-sm font-bold text-white"
-              style={{ background: 'linear-gradient(135deg, #1a1a2e, #2d2d4e)', boxShadow: '0 2px 12px rgba(26,26,46,0.25)' }}>
-              Get Started
-            </MagneticButton>
-          </div>
-        </nav>
-      </div>
+      {/* Spacer for fixed header */}
+      <div className="h-20" />
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center text-center px-6 pt-12 pb-16">
