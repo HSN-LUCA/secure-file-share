@@ -90,12 +90,12 @@ export default function VipPage() {
       const res = await fetch(`/api/download/${code}?info=true`);
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setLookupError(data.error || 'File not found');
+        setLookupError('No files found for this code. Please check and try again.');
       } else {
         setLookupResult(data);
       }
     } catch {
-      setLookupError('Something went wrong. Try again.');
+      setLookupError('Something went wrong. Please try again.');
     } finally {
       setLookupLoading(false);
     }
@@ -301,10 +301,9 @@ export default function VipPage() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-40 h-40 rounded-full flex flex-col items-center justify-center shadow-lg"
               style={{ background: `linear-gradient(135deg, ${VIP.primaryLight}, ${VIP.primary})` }}>
-              <Upload className="w-12 h-12 text-white mb-2" />
+              <Upload className="w-14 h-14 text-white mb-2" />
               <div className="text-white text-center">
-                <p className="text-xl font-bold mb-1">Upload Files</p>
-                <p className="text-xs opacity-90">Click to browse</p>
+                <p className="text-base font-bold">Browse Files</p>
               </div>
             </div>
           </div>
@@ -360,9 +359,10 @@ export default function VipPage() {
               <MagneticButton
                 onClick={handleUpload}
                 disabled={uploading}
-                className="w-full px-6 py-3 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
-                style={{ background: `linear-gradient(to right, ${VIP.primaryLight}, ${VIP.primary})` }}
+                className="w-full px-6 py-4 text-white font-bold text-lg rounded-xl hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-3"
+                style={{ background: `linear-gradient(to right, ${VIP.primaryLight}, ${VIP.primary})`, boxShadow: `0 4px 20px rgba(178,140,55,0.35)` }}
               >
+                <Upload className="w-5 h-5" />
                 {uploading ? `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...` : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}
               </MagneticButton>
 
