@@ -21,6 +21,7 @@ import { verifyCaptchaToken, getCaptchaErrorMessage } from '@/lib/captcha/verifi
 import { createRateLimitingMiddleware, getClientIp, createRateLimitErrorResponse } from '@/lib/middleware/rate-limiting';
 import { createBotDetectionMiddleware, logBotDetectionEvent } from '@/lib/middleware/bot-detection';
 import { getUserFromRequest } from '@/lib/auth/middleware';
+import { scanContent } from '@/lib/moderation/content-scanner';
 
 // Create middleware instances
 const rateLimitMiddleware = createRateLimitingMiddleware({
@@ -171,6 +172,23 @@ export async function POST(request: NextRequest) {
     const fileName = sanitizeFileName(file.name);
     const fileSize = fileBuffer.length;
     const mimeType = file.type;
+
+    // Content moderation scan (images only, fails open on error)
+    const scanResult = await scanContent(fileBuffer, mimeType);
+    if (!scanResult.safe) {
+      console.warn('[UPLOAD] Content flagged by moderation:', scanResult.reason);
+      await createAnalytics({
+        event_type: 'upload',
+        file_id: undefined,
+        user_id: undefined,
+        ip_address: clientIp,
+        metadata: { error: 'Content moderation blocked upload', reason: scanResult.reason, fileName },
+      }).catch(() => {});
+      return NextResponse.json(
+        { success: false, error: 'This file contains content that violates our policies and cannot be uploaded.' },
+        { status: 422 }
+      );
+    }
 
     // Determine user plan (default to free)
     let userPlan: UserPlan = 'free';
