@@ -79,12 +79,12 @@ export default function Home() {
       const res = await fetch(`/api/download/${code}?info=true`);
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setLookupError(data.error || 'File not found');
+        setLookupError('No files found for this code. Please check and try again.');
       } else {
         setLookupResult(data);
       }
     } catch {
-      setLookupError('Something went wrong. Try again.');
+      setLookupError('Something went wrong. Please try again.');
     } finally {
       setLookupLoading(false);
     }

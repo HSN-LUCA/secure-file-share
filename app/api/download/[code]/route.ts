@@ -37,14 +37,7 @@ export async function GET(
     const url = new URL(request.url);
     const infoOnly = url.searchParams.get('info') === 'true';
 
-    // Validate and sanitize share code
-    const shareCodeValidation = validateShareCode(shareCode);
-    if (!shareCodeValidation.valid) {
-      return NextResponse.json(
-        { success: false, error: shareCodeValidation.error },
-        { status: 400 }
-      );
-    }
+    // Sanitize share code (trim whitespace, take first 10 chars max)
     const sanitizedShareCode = sanitizeShareCode(shareCode);
 
     // Get all files with this share code (handles both single and group uploads)
