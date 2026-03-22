@@ -238,26 +238,26 @@ export default function Home() {
       </div>
 
       {/* Nav — ClickUp-style floating pill */}
-      <div className="relative z-10 flex justify-center px-4 pt-5">
-        <nav className="flex items-center justify-between w-full max-w-4xl px-4 py-2.5 rounded-2xl"
+      <div className="relative z-10 flex justify-center px-6 pt-6">
+        <nav className="flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-2xl"
           style={{
-            background: 'rgba(255,255,255,0.85)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(220,210,195,0.6)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
+            background: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(220,210,195,0.5)',
+            boxShadow: '0 2px 32px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)',
           }}>
           {/* Logo */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
               <span className="text-white font-bold text-sm">H</span>
             </div>
-            <span className="font-bold text-sm" style={{ color: '#1a1a2e' }}>HodHod</span>
+            <span className="font-bold text-base" style={{ color: '#1a1a2e' }}>HodHod</span>
           </div>
 
           {/* Center links */}
-          <div className="hidden sm:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-8">
             {[
               { label: 'Home', href: '#' },
               { label: 'Upload', href: '#upload' },
@@ -265,24 +265,28 @@ export default function Home() {
               { label: 'VIP', href: '/vip' },
             ].map(({ label, href }) => (
               <a key={label} href={href}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-black/5"
-                style={{ color: '#4a4a5a' }}>
+                className="text-sm font-semibold transition-colors duration-150"
+                style={{ color: '#374151', textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#111827')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#374151')}>
                 {label}
               </a>
             ))}
           </div>
 
           {/* Right CTAs */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <a href="#find"
-              className="hidden sm:block px-4 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-black/5"
-              style={{ color: '#4a4a5a' }}>
+              className="hidden sm:block text-sm font-semibold transition-colors duration-150"
+              style={{ color: '#374151', textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#111827')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#374151')}>
               Log in
             </a>
             <MagneticButton
               onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white shadow-sm"
-              style={{ background: '#1a1a2e' }}>
+              className="px-5 py-2 rounded-xl text-sm font-bold text-white"
+              style={{ background: 'linear-gradient(135deg, #1a1a2e, #2d2d4e)', boxShadow: '0 2px 12px rgba(26,26,46,0.25)' }}>
               Get Started
             </MagneticButton>
           </div>
