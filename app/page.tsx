@@ -242,7 +242,7 @@ export default function Home() {
       <Header />
 
       {/* Spacer for fixed header */}
-      <div className="h-16" />
+      <div className="h-14" />
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center text-center px-6 pt-16 pb-16">
