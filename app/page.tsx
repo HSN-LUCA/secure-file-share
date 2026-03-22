@@ -237,30 +237,57 @@ export default function Home() {
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 sm:px-12 py-5">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
-            <span className="text-white font-bold text-sm">H</span>
+      {/* Nav — ClickUp-style floating pill */}
+      <div className="relative z-10 flex justify-center px-4 pt-5">
+        <nav className="flex items-center justify-between w-full max-w-4xl px-4 py-2.5 rounded-2xl"
+          style={{
+            background: 'rgba(255,255,255,0.85)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(220,210,195,0.6)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
+          }}>
+          {/* Logo */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
+              style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
+              <span className="text-white font-bold text-sm">H</span>
+            </div>
+            <span className="font-bold text-sm" style={{ color: '#1a1a2e' }}>HodHod</span>
           </div>
-          <div>
-            <p className="font-bold text-sm leading-none" style={{ color: '#1a1a2e' }}>HodHod</p>
-            <p className="text-xs leading-none" style={{ color: '#9a8c7a' }}>FILE SHARE</p>
+
+          {/* Center links */}
+          <div className="hidden sm:flex items-center gap-1">
+            {[
+              { label: 'Home', href: '#' },
+              { label: 'Upload', href: '#upload' },
+              { label: 'Find File', href: '#find' },
+              { label: 'VIP', href: '/vip' },
+            ].map(({ label, href }) => (
+              <a key={label} href={href}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-black/5"
+                style={{ color: '#4a4a5a' }}>
+                {label}
+              </a>
+            ))}
           </div>
-        </div>
-        <div className="hidden sm:flex items-center gap-8">
-          <a href="#" className="text-sm font-medium border-b-2 pb-0.5" style={{ color: '#1a1a2e', borderColor: '#D4A017' }}>Home</a>
-          <a href="#upload" className="text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: '#6b6450' }}>Upload</a>
-          <a href="#find" className="text-sm font-medium hover:opacity-70 transition-opacity" style={{ color: '#6b6450' }}>Find File</a>
-        </div>
-        <MagneticButton
-          onClick={() => fileInputRef.current?.click()}
-          className="px-5 py-2 rounded-xl text-sm font-semibold text-white shadow-md"
-          style={{ background: '#1a1a2e' }}>
-          Get Started
-        </MagneticButton>
-      </nav>
+
+          {/* Right CTAs */}
+          <div className="flex items-center gap-2">
+            <a href="#find"
+              className="hidden sm:block px-4 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-black/5"
+              style={{ color: '#4a4a5a' }}>
+              Log in
+            </a>
+            <MagneticButton
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white shadow-sm"
+              style={{ background: '#1a1a2e' }}>
+              Get Started
+            </MagneticButton>
+          </div>
+        </nav>
+      </div>
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center text-center px-6 pt-12 pb-16">
