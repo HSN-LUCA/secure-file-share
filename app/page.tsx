@@ -242,7 +242,7 @@ export default function Home() {
       <LuxoraHeader onGetStarted={() => fileInputRef.current?.click()} />
 
       {/* Spacer for fixed header */}
-      <div className="h-20" />
+      <div className="h-24" />
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center text-center px-6 pt-12 pb-16">
@@ -415,6 +415,155 @@ export default function Home() {
             </AnimatePresence>
           </div>
         </motion.div>
+      </section>
+
+      {/* How It Works — 3 steps */}
+      <section className="relative z-10 px-4 sm:px-6 pt-8 pb-24">
+        <div className="max-w-5xl mx-auto">
+          {/* Badge */}
+          <div className="flex justify-center mb-6">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold"
+              style={{ background: 'rgba(212,160,23,0.12)', color: '#b28c37', border: '1px solid rgba(212,160,23,0.25)' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#D4A017' }} />
+              How It Works
+            </span>
+          </div>
+
+          {/* Heading */}
+          <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-2"
+            style={{ color: '#1a1a2e', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Three Steps to
+          </h2>
+          <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-bold italic leading-tight mb-4"
+            style={{ color: '#8a9bb5', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            Effortless Sharing
+          </h2>
+          <p className="text-center text-sm sm:text-base text-gray-500 mb-12 max-w-lg mx-auto">
+            No sign-ups. No complexity. Just upload, share, and download.
+          </p>
+
+          {/* Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                step: '01',
+                icon: <Upload className="w-6 h-6" />,
+                color: '#f97316',
+                bg: 'linear-gradient(135deg, #fff7ed, #fff1e0)',
+                border: '#fed7aa',
+                title: 'Upload Your Files',
+                desc: 'Drag & drop or browse to upload any file type. We handle images, documents, videos, and everything in between — instantly.',
+                dots: ['#f97316', '#fbbf24'],
+              },
+              {
+                step: '02',
+                icon: <Share2 className="w-6 h-6" />,
+                color: '#0ea5e9',
+                bg: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
+                border: '#bae6fd',
+                title: 'Get Your Share Code',
+                desc: 'A unique, encrypted code is generated in seconds. Share it with anyone — no account needed, no friction, just a simple code.',
+                dots: ['#0ea5e9', '#38bdf8'],
+              },
+              {
+                step: '03',
+                icon: <Download className="w-6 h-6" />,
+                color: '#10b981',
+                bg: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+                border: '#a7f3d0',
+                title: 'Download Anywhere',
+                desc: 'Recipients enter the code and instantly download your files — from any device, any browser, anywhere in the world.',
+                dots: ['#10b981', '#34d399'],
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={card.step}
+                className="relative rounded-2xl p-6 sm:p-8 flex flex-col"
+                style={{ background: card.bg, border: `1px solid ${card.border}` }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+              >
+                {/* Step number */}
+                <span className="text-6xl font-bold opacity-10 absolute top-4 left-6"
+                  style={{ color: card.color, fontFamily: 'Georgia, serif' }}>
+                  {card.step}
+                </span>
+
+                {/* Icon badge */}
+                <div className="relative z-10 flex justify-end mb-12">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: card.color, color: 'white' }}>
+                    {card.icon}
+                  </div>
+                </div>
+
+                {/* Illustration placeholder area */}
+                <div className="relative z-10 rounded-xl p-4 mb-6 min-h-[120px] flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.7)', border: `1px solid ${card.border}` }}>
+                  {i === 0 && (
+                    <div className="flex flex-col gap-2 w-full">
+                      <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
+                        <span className="w-2 h-2 rounded-full" style={{ background: '#ef4444' }} />
+                        <span className="text-xs text-gray-600">report.pdf</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
+                        <span className="w-2 h-2 rounded-full" style={{ background: '#3b82f6' }} />
+                        <span className="text-xs text-gray-600">photo.jpg</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 shadow-sm">
+                        <span className="w-2 h-2 rounded-full" style={{ background: '#22c55e' }} />
+                        <span className="text-xs text-gray-600">video.mp4</span>
+                      </div>
+                    </div>
+                  )}
+                  {i === 1 && (
+                    <div className="text-center">
+                      <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2">Your Share Code</p>
+                      <p className="text-xl font-mono font-bold tracking-[0.3em]" style={{ color: '#1a1a2e' }}>
+                        X 7 K · 9 Q P
+                      </p>
+                      <div className="flex items-center justify-center gap-1 mt-2">
+                        <CheckCircle className="w-3 h-3 text-green-500" />
+                        <span className="text-xs text-green-600 font-medium">Copied!</span>
+                      </div>
+                    </div>
+                  )}
+                  {i === 2 && (
+                    <div className="flex items-center justify-center gap-4">
+                      {['Mobile', 'Laptop', 'Tablet'].map((device) => (
+                        <div key={device} className="flex flex-col items-center gap-1">
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                            style={{ background: 'rgba(16,185,129,0.1)' }}>
+                            <Download className="w-4 h-4" style={{ color: '#10b981' }} />
+                          </div>
+                          <span className="text-[10px] text-gray-400">{device}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Title + description */}
+                <h3 className="text-lg font-bold mb-2"
+                  style={{ color: '#1a1a2e', fontFamily: 'Georgia, serif' }}>
+                  {card.title}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed flex-1">
+                  {card.desc}
+                </p>
+
+                {/* Dots */}
+                <div className="flex gap-1.5 mt-4">
+                  {card.dots.map((d, j) => (
+                    <span key={j} className="w-2 h-2 rounded-full" style={{ background: d, opacity: j === 0 ? 1 : 0.4 }} />
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );
