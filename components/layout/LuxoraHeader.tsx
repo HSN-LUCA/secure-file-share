@@ -65,7 +65,7 @@ export default function LuxoraHeader({ onGetStarted }: LuxoraHeaderProps) {
   return (
     <>
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 pt-6"
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 pt-4"
         initial={{ y: -100 }}
         animate={{ y: hidden ? -120 : 0 }}
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
