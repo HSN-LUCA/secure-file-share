@@ -381,7 +381,7 @@ export default function Home() {
           {/* Divider */}
           <div className="flex items-center gap-3 w-full mb-8">
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, #E8C547)' }} />
-            <span className="text-xs text-gray-400 font-medium tracking-widest uppercase">or</span>
+            <span className="text-base font-bold text-gray-900">or</span>
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, #E8C547)' }} />
           </div>
 
