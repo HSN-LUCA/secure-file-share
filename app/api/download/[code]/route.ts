@@ -129,45 +129,30 @@ export async function GET(
         authTag: file.encryption_auth_tag || '',
       });
 
-      // Increment download counter
+      // Fire analytics + counter updates in background — don't block the download
       const newDownloadCount = (file.download_count || 0) + 1;
-      const updateResult = await updateFile(file.id, {
-        download_count: newDownloadCount,
-      });
+      Promise.all([
+        updateFile(file.id, { download_count: newDownloadCount })
+          .catch(err => console.error('Failed to update download counter:', err)),
+        createDownload({ file_id: file.id, ip_address: clientIp, user_agent: userAgent, country: null })
+          .catch(err => console.error('Failed to record download:', err)),
+        createAnalytics({
+          event_type: 'download',
+          file_id: file.id,
+          ip_address: clientIp,
+          metadata: { fileName: file.file_name, fileSize: file.file_size, shareCode: sanitizedShareCode, downloadCount: newDownloadCount },
+        }).catch(err => console.error('Failed to log analytics:', err)),
+      ]);
 
-      if (updateResult.error) {
-        console.error('Failed to update download counter:', updateResult.error);
-        // Continue anyway - don't fail the download
-      }
-
-      // Record download in downloads table
-      const downloadRecord = await createDownload({
-        file_id: file.id,
-        ip_address: clientIp,
-        user_agent: userAgent,
-        country: null, // Could be populated with GeoIP lookup
-      });
-
-      if (downloadRecord.error) {
-        console.error('Failed to record download:', downloadRecord.error);
-        // Continue anyway - don't fail the download
-      }
-
-      // Log successful download
-      await createAnalytics({
-        event_type: 'download',
-        file_id: file.id,
-        ip_address: clientIp,
-        metadata: {
-          fileName: file.file_name,
-          fileSize: file.file_size,
-          shareCode: sanitizedShareCode,
-          downloadCount: newDownloadCount,
+      // Stream decrypted buffer directly to client — avoids holding full file in memory
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(fileData);
+          controller.close();
         },
-      }).catch(err => console.error('Failed to log analytics:', err));
+      });
 
-      // Return file with appropriate headers
-      return new NextResponse(Buffer.from(fileData), {
+      return new NextResponse(stream, {
         status: 200,
         headers: {
           'Content-Type': contentType || 'application/octet-stream',
@@ -181,16 +166,12 @@ export async function GET(
     } catch (storageError) {
       console.error('Storage error during download:', storageError);
 
-      // Log storage error
-      await createAnalytics({
+      createAnalytics({
         event_type: 'download',
         file_id: file.id,
         ip_address: clientIp,
-        metadata: {
-          error: 'Storage error',
-          shareCode: sanitizedShareCode,
-        },
-      }).catch(err => console.error('Failed to log analytics:', err));
+        metadata: { error: 'Storage error', shareCode: sanitizedShareCode },
+      }).catch(() => {});
 
       return NextResponse.json(
         { success: false, error: 'Failed to download file' },
