@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
 import { Upload, X, CheckCircle, Download, Search, Copy, Share2 } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
-import LuxoraHeader from '@/components/layout/LuxoraHeader';
 
 interface FileInfo {
   id?: string;
@@ -238,22 +237,8 @@ export default function Home() {
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
 
-      {/* Header */}
-      <LuxoraHeader onGetStarted={() => fileInputRef.current?.click()} />
-
-      {/* Spacer for fixed header */}
-      <div className="h-20" />
-
       {/* Hero */}
-      <section className="relative z-10 flex flex-col items-center text-center px-6 pt-12 pb-16">
-        <motion.div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-xs font-medium"
-          style={{ background: 'rgba(212,160,23,0.12)', color: '#b28c37', border: '1px solid rgba(212,160,23,0.25)' }}
-          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
-          Now Available
-        </motion.div>
-
+      <section className="relative z-10 flex flex-col items-center text-center px-6 pt-16 pb-16">
         <motion.h1
           className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-3 max-w-2xl"
           style={{ color: '#1a1a2e', fontFamily: 'Georgia, "Times New Roman", serif' }}
@@ -268,11 +253,6 @@ export default function Home() {
           Fast, Easy, Secure.
         </motion.p>
 
-        <motion.p
-          className="text-sm sm:text-base text-gray-500 max-w-sm leading-relaxed"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.35 }}>
-          Empower your workflow with an elegantly crafted platform that transforms complexity into simplicity.
-        </motion.p>
       </section>
 
       {/* Upload + Find section */}
