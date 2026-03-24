@@ -1,13 +1,13 @@
 {
-  "name": "Secure File Share",
-  "short_name": "FileShare",
-  "description": "Share files securely with unique numeric codes",
+  "name": "HodHod",
+  "short_name": "HodHod",
+  "description": "Send files fast and securely with HodHod",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#ffffff",
-  "theme_color": "#3b82f6",
+  "background_color": "#fdf6ec",
+  "theme_color": "#D4A017",
   "categories": ["productivity", "utilities"],
   "screenshots": [
     {

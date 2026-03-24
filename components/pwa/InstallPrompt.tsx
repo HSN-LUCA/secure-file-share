@@ -120,7 +120,7 @@ export default function InstallPrompt({
         <div className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Download className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <Download className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
               <h3 className="font-semibold text-neutral-900 dark:text-white">
                 Install App
               </h3>
@@ -135,14 +135,14 @@ export default function InstallPrompt({
           </div>
 
           <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-            Install Secure File Share on your device for quick access and offline support.
+            Install HodHod on your device for quick access and offline support.
           </p>
 
           <div className="flex gap-2">
             <button
               onClick={handleInstall}
               disabled={isInstalling}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-3 rounded transition-colors text-sm flex items-center justify-center gap-2"
+              className="flex-1 bg-yellow-600 hover:bg-yellow-700 disabled:bg-yellow-400 text-white font-medium py-2 px-3 rounded transition-colors text-sm flex items-center justify-center gap-2"
               aria-label="Install app"
             >
               {isInstalling ? (
