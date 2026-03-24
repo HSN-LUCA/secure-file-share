@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
 import { Upload, X, CheckCircle, Download, Search, Copy, Share2 } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
-import Header from '@/components/layout/Header';
 
 interface FileInfo {
   id?: string;
@@ -237,13 +236,6 @@ export default function Home() {
         <div className="absolute bottom-40 left-1/4 w-72 h-72 rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
-
-      {/* Header */}
-      <Header />
-
-      {/* Spacer for fixed header */}
-      <div className="h-14" />
-
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center text-center px-3 sm:px-6 pt-6 sm:pt-10 md:pt-16 pb-8 sm:pb-12 md:pb-16">
         <motion.h1
