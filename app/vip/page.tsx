@@ -5,15 +5,15 @@ import { useState, useRef } from 'react';
 import { Upload, X, CheckCircle, Download, Search, Copy, Share2 } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
 
-// VIP theme palette
+// VIP theme palette — matches app gold theme
 const VIP = {
-  primary: '#b28c37',
-  primaryLight: '#c9a455',
-  bg: '#f9f7ed',
-  bgDeep: '#f2eed8',
-  border: '#d4c48a',
-  text: '#232528',
-  textMuted: '#6b6450',
+  primary: '#D4A017',
+  primaryLight: '#F5C842',
+  bg: '#fdf6ec',
+  bgDeep: '#faf4f0',
+  border: '#E8C547',
+  text: '#1a1a2e',
+  textMuted: '#8a9bb5',
 };
 
 interface FileInfo {
@@ -185,7 +185,7 @@ export default function VipPage() {
     const groupCode = successResults[0]?.shareCode || '';
 
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: '#fff' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: 'linear-gradient(135deg, #fdf6ec 0%, #faf4f0 50%, #f5f0f8 100%)' }}>
         <motion.div
           className="w-full max-w-sm sm:max-w-md"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -268,9 +268,9 @@ export default function VipPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: '#fff' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ background: 'linear-gradient(135deg, #fdf6ec 0%, #faf4f0 50%, #f5f0f8 100%)' }}>
       <motion.div
-        className="flex flex-col items-center justify-center w-full max-w-sm sm:max-w-md"
+        className="flex flex-col items-center justify-center w-full max-w-xs sm:max-w-sm md:max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -303,7 +303,7 @@ export default function VipPage() {
               style={{ background: `linear-gradient(135deg, ${VIP.primaryLight}, ${VIP.primary})` }}>
               <Upload className="w-14 h-14 text-white mb-2" />
               <div className="text-white text-center">
-                <p className="text-base font-bold">Browse Files</p>
+                <p className="text-base font-bold">Choose a file...</p>
               </div>
             </div>
           </div>
@@ -356,15 +356,21 @@ export default function VipPage() {
                 {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
               </p>
 
-              <MagneticButton
-                onClick={handleUpload}
-                disabled={uploading}
-                className="w-full px-6 py-4 text-white font-bold text-lg rounded-xl hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-3"
-                style={{ background: `linear-gradient(to right, ${VIP.primaryLight}, ${VIP.primary})`, boxShadow: `0 4px 20px rgba(178,140,55,0.35)` }}
-              >
-                <Upload className="w-5 h-5" />
-                {uploading ? `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...` : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}
-              </MagneticButton>
+              <div className="flex justify-center">
+                <MagneticButton
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="px-8 py-4 text-white font-bold text-lg rounded-full hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-3"
+                  style={{ background: `linear-gradient(to right, ${VIP.primaryLight}, ${VIP.primary})`, boxShadow: `0 4px 20px rgba(212,160,23,0.35)` }}
+                >
+                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                    <Upload className="w-4 h-4" style={{ color: VIP.primary }} />
+                  </div>
+                  <span className="uppercase tracking-wider">
+                    {uploading ? 'Uploading...' : 'Upload'}
+                  </span>
+                </MagneticButton>
+              </div>
 
               {uploadError && (
                 <p className="mt-3 text-sm text-red-600 text-center">{uploadError}</p>

@@ -281,7 +281,7 @@ export default function Home() {
                 <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full flex flex-col items-center justify-center shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
                   <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-white mb-1" />
-                  <p className="text-white text-xs sm:text-sm font-bold">Browse Files</p>
+                  <p className="text-white text-xs sm:text-sm font-bold">Choose a file...</p>
                 </div>
               </div>
               <input ref={fileInputRef} type="file" multiple onChange={handleFileInputChange}
@@ -317,13 +317,16 @@ export default function Home() {
                 <p className="text-xs text-gray-400 text-center mb-3">
                   {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
                 </p>
-                <MagneticButton onClick={handleUpload} disabled={uploading}
-                  className="w-full px-3 sm:px-6 py-3 sm:py-4 text-white font-bold text-sm sm:text-base rounded-xl hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-2 sm:gap-3 min-h-12 sm:min-h-14"
-                  style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)', boxShadow: '0 4px 20px rgba(212,160,23,0.35)' }}>
-                  <Upload className="w-5 h-5" />
-                  <span className="hidden sm:inline">{uploading ? `Uploading ${files.length} file${files.length > 1 ? 's' : ''}...` : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}</span>
-                  <span className="sm:hidden">{uploading ? 'Uploading...' : 'Upload'}</span>
-                </MagneticButton>
+                <div className="flex justify-center">
+                  <MagneticButton onClick={handleUpload} disabled={uploading}
+                    className="px-6 sm:px-8 py-3 sm:py-4 text-white font-bold text-sm sm:text-base rounded-full hover:shadow-xl transition-shadow disabled:opacity-50 flex items-center justify-center gap-2 sm:gap-3"
+                    style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)', boxShadow: '0 4px 20px rgba(212,160,23,0.35)' }}>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                      <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: '#D4A017' }} />
+                    </div>
+                    <span className="uppercase tracking-wider">{uploading ? 'Uploading...' : 'Upload'}</span>
+                  </MagneticButton>
+                </div>
                 {uploadError && <p className="mt-3 text-xs sm:text-sm text-red-600 text-center">{uploadError}</p>}
               </motion.div>
             )}
