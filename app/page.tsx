@@ -237,7 +237,7 @@ export default function Home() {
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
       {/* Hero */}
-      <section className="relative z-10 flex flex-col items-center text-center px-3 sm:px-6 pt-6 sm:pt-10 md:pt-16 pb-8 sm:pb-12 md:pb-16">
+      <section className="relative z-10 flex flex-col items-center text-center px-3 sm:px-6 pt-24 sm:pt-32 md:pt-44 pb-8 sm:pb-12 md:pb-16">
         <motion.h1
           className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-2 sm:mb-3 max-w-2xl"
           style={{ color: '#1a1a2e', fontFamily: 'Georgia, "Times New Roman", serif' }}
