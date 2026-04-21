@@ -362,7 +362,7 @@ export default function Home() {
             {t.uploadMore}
           </MagneticButton>
           <button
-            onClick={() => window.history.back()}
+            onClick={reset}
             className="w-full mt-3 px-4 sm:px-6 py-3 font-semibold rounded-xl transition-colors min-h-12 border-2"
             style={{ borderColor: '#D4A017', color: '#D4A017', backgroundColor: 'transparent' }}
           >
@@ -500,7 +500,7 @@ export default function Home() {
           </div>
 
           {/* Find file card */}
-          <div id="find" className="w-full rounded-2xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col items-center gap-4 sm:gap-5 bg-white shadow-sm"
+          <div id="find" className="w-full rounded-2xl px-6 sm:px-10 py-6 sm:py-8 flex flex-col items-center gap-4 sm:gap-5 bg-white shadow-sm"
             style={{ border: '1px solid #E8C547' }}>
             {/* Lock icon */}
             <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#fdf6ec' }}>
