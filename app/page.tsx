@@ -53,6 +53,11 @@ const translations = {
     copyCode: 'Copy code',
     shareCode: 'Share code',
     useThisCode: 'Use this code to download all',
+    back: 'Back',
+    enterYourShareCode: 'Enter your share code',
+    typeThe6Digit: 'Type the 6-digit code you received to access your files',
+    findMyFiles: 'Find my files',
+    didntReceiveCode: "Didn't receive a code? Ask the sender to share it with you.",
   },
   ar: {
     sendFiles: 'أرسل الملفات بالرمز',
@@ -80,6 +85,11 @@ const translations = {
     copyCode: 'نسخ الرمز',
     shareCode: 'مشاركة الرمز',
     useThisCode: 'استخدم هذا الرمز لتحميل جميع',
+    back: 'الرجوع',
+    enterYourShareCode: 'أدخل رمز المشاركة',
+    typeThe6Digit: 'اكتب الرمز المكون من 6 أرقام الذي تلقيته للوصول إلى ملفاتك',
+    findMyFiles: 'ابحث عن ملفاتي',
+    didntReceiveCode: 'لم تتلق رمزًا؟ اطلب من المرسل مشاركته معك.',
   },
 };
 
@@ -128,6 +138,8 @@ export default function Home() {
   const [lookupError, setLookupError] = useState('');
   const [lookupResult, setLookupResult] = useState<LookupResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [codeDigits, setCodeDigits] = useState<string[]>(['', '', '', '', '', '']);
+  const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleLookup = async () => {
     const code = shareCode.trim();
@@ -203,6 +215,44 @@ export default function Home() {
 
   const reset = () => { setResults([]); setFiles([]); setUploadError(''); };
 
+  const handleDigitChange = (index: number, value: string) => {
+    if (value.length > 1) value = value.slice(-1);
+    if (value && !/^\d$/.test(value)) return;
+    const newDigits = [...codeDigits];
+    newDigits[index] = value;
+    setCodeDigits(newDigits);
+    setShareCode(newDigits.join(''));
+    setLookupResult(null);
+    setLookupError('');
+    if (value && index < 5) {
+      codeInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleDigitKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !codeDigits[index] && index > 0) {
+      codeInputRefs.current[index - 1]?.focus();
+    }
+    if (e.key === 'Enter' && codeDigits.join('').length === 6) {
+      handleLookup();
+    }
+  };
+
+  const handleDigitPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const newDigits = [...codeDigits];
+    for (let i = 0; i < 6; i++) {
+      newDigits[i] = pasted[i] || '';
+    }
+    setCodeDigits(newDigits);
+    setShareCode(newDigits.join(''));
+    if (pasted.length > 0) {
+      const focusIndex = Math.min(pasted.length, 5);
+      codeInputRefs.current[focusIndex]?.focus();
+    }
+  };
+
   const successResults = results.filter(r => r.shareCode);
   const failedResults = results.filter(r => !r.shareCode);
 
@@ -225,11 +275,12 @@ export default function Home() {
   const langSwitcher = (
     <button
       onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-      className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-lg"
+      className="fixed top-4 right-4 z-50 flex items-center justify-center shadow-lg md:px-4 md:py-2 w-10 h-10 md:w-auto md:h-auto rounded-full"
       style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)', border: '2px solid rgba(255,255,255,0.5)' }}
       aria-label="Toggle language"
     >
-      {lang === 'en' ? '🇬🇧' : '🇦🇪'}
+      <span className="text-lg">{lang === 'en' ? '🇬🇧' : '🇦🇪'}</span>
+      <span className="hidden md:inline ml-1.5 text-sm font-semibold text-white">{lang === 'en' ? 'EN' : 'عربي'}</span>
     </button>
   );
 
@@ -310,6 +361,13 @@ export default function Home() {
             style={{ backgroundColor: '#D4A017' }} onClick={reset}>
             {t.uploadMore}
           </MagneticButton>
+          <button
+            onClick={() => window.history.back()}
+            className="w-full mt-3 px-4 sm:px-6 py-3 font-semibold rounded-xl transition-colors min-h-12 border-2"
+            style={{ borderColor: '#D4A017', color: '#D4A017', backgroundColor: 'transparent' }}
+          >
+            {t.back}
+          </button>
         </motion.div>
       </div>
     );
@@ -335,8 +393,11 @@ export default function Home() {
         <div className="absolute bottom-40 left-1/4 w-72 h-72 rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
+      {/* Spacer between marquee and hero */}
+      <div className="h-16 sm:h-20 md:h-24" />
+
       {/* Hero */}
-      <section className="relative z-10 flex flex-col items-center text-center px-3 sm:px-6 pt-40 sm:pt-52 md:pt-64 pb-8 sm:pb-12 md:pb-16">
+      <section className="relative z-10 flex flex-col items-center text-center px-3 sm:px-6 pt-16 sm:pt-20 md:pt-28 pb-8 sm:pb-12 md:pb-16">
         <motion.h1
           className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-2 sm:mb-3 max-w-2xl"
           style={{ color: '#1a1a2e', fontFamily: 'Georgia, "Times New Roman", serif' }}
@@ -439,54 +500,91 @@ export default function Home() {
           </div>
 
           {/* Find file card */}
-          <div id="find" className="w-full rounded-2xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-3 sm:gap-4 bg-white shadow-sm"
-            style={{ border: '1px solid #E8C547' }}>
-            <div className="text-center">
-              <p className="text-sm sm:text-base font-semibold" style={{ color: '#1a1a2e' }}>{t.haveCode}</p>
-              <p className="text-xs sm:text-sm text-gray-500">{t.enterShareCode}</p>
+          <div id="find" className="w-full rounded-2xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col items-center gap-4 sm:gap-5"
+            style={{ backgroundColor: '#1a1a2e' }}>
+            {/* Lock icon */}
+            <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#fdf6ec' }}>
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#D4A017" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
             </div>
-            <input type="text" inputMode="numeric" placeholder={t.enterCode}
-              value={shareCode}
-              onChange={e => { setShareCode(e.target.value); setLookupResult(null); setLookupError(''); }}
-              onKeyDown={e => e.key === 'Enter' && handleLookup()}
-              maxLength={10}
-              className="w-full text-center text-lg sm:text-2xl font-mono font-bold tracking-widest rounded-xl px-3 sm:px-4 py-2 sm:py-3 outline-none border-2 transition-colors min-h-12 placeholder-white"
-              style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }} />
-            <MagneticButton onClick={handleLookup} disabled={lookupLoading || !shareCode.trim()}
-              className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 text-white min-h-12 sm:min-h-14"
-              style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+            
+            {/* Title */}
+            <div className="text-center">
+              <p className="text-lg sm:text-xl font-bold text-white mb-1">{t.enterYourShareCode}</p>
+              <p className="text-xs sm:text-sm" style={{ color: '#8a9bb5' }}>{t.typeThe6Digit}</p>
+            </div>
+
+            {/* 6 digit boxes */}
+            <div className="flex items-center gap-2 sm:gap-3" dir="ltr">
+              {[0, 1, 2].map(i => (
+                <input key={i}
+                  ref={el => { codeInputRefs.current[i] = el; }}
+                  type="text" inputMode="numeric" maxLength={1}
+                  value={codeDigits[i]}
+                  onChange={e => handleDigitChange(i, e.target.value)}
+                  onKeyDown={e => handleDigitKeyDown(i, e)}
+                  onPaste={i === 0 ? handleDigitPaste : undefined}
+                  className="w-11 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-mono font-bold rounded-xl outline-none border-2 transition-colors"
+                  style={{ backgroundColor: '#2a2a3e', color: 'white', borderColor: codeDigits[i] ? '#D4A017' : '#3a3a4e' }}
+                />
+              ))}
+              <span className="text-gray-500 text-xl mx-1">·</span>
+              {[3, 4, 5].map(i => (
+                <input key={i}
+                  ref={el => { codeInputRefs.current[i] = el; }}
+                  type="text" inputMode="numeric" maxLength={1}
+                  value={codeDigits[i]}
+                  onChange={e => handleDigitChange(i, e.target.value)}
+                  onKeyDown={e => handleDigitKeyDown(i, e)}
+                  className="w-11 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-mono font-bold rounded-xl outline-none border-2 transition-colors"
+                  style={{ backgroundColor: '#2a2a3e', color: 'white', borderColor: codeDigits[i] ? '#D4A017' : '#3a3a4e' }}
+                />
+              ))}
+            </div>
+
+            {/* Find button */}
+            <button onClick={handleLookup} disabled={lookupLoading || codeDigits.join('').length < 6}
+              className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-40"
+              style={{ backgroundColor: '#3a3a4e', color: '#9ca3af' }}>
               <Search className="w-4 h-4" />
-              {lookupLoading ? t.searching : t.find}
-            </MagneticButton>
-            {lookupError && <p className="text-xs sm:text-sm text-red-500 text-center">{lookupError}</p>}
+              {lookupLoading ? t.searching : t.findMyFiles}
+            </button>
+
+            {/* Help text */}
+            <p className="text-xs text-center" style={{ color: '#6b7280' }}>{t.didntReceiveCode}</p>
+
+            {lookupError && <p className="text-xs sm:text-sm text-red-400 text-center">{lookupError}</p>}
+            
             <AnimatePresence>
               {lookupResult && (
-                <motion.div className="flex flex-col gap-2"
+                <motion.div className="flex flex-col gap-2 w-full"
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                   {lookupResult.isGroup && lookupResult.files ? (
                     lookupResult.files.map((f, i) => (
-                      <div key={f.id || i} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 sm:px-4 py-2 sm:py-3 gap-2"
-                        style={{ border: '1px solid #E8C547' }}>
+                      <div key={f.id || i} className="flex items-center justify-between rounded-xl px-3 sm:px-4 py-2 sm:py-3 gap-2"
+                        style={{ backgroundColor: '#2a2a3e', border: '1px solid #3a3a4e' }}>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs sm:text-sm font-medium text-gray-800 truncate">{f.fileName}</p>
-                          <p className="text-xs text-gray-400">{formatSize(f.fileSize)}</p>
+                          <p className="text-xs sm:text-sm font-medium text-white truncate">{f.fileName}</p>
+                          <p className="text-xs" style={{ color: '#8a9bb5' }}>{formatSize(f.fileSize)}</p>
                         </div>
-                        <a href={`/api/download/${shareCode.trim()}?fileId=${f.id}`}
-                          className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0 min-h-10 sm:min-h-auto"
+                        <a href={`/api/download/${codeDigits.join('').trim()}?fileId=${f.id}`}
+                          className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
                           style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
                           <Download className="w-3 h-3" /><span className="hidden sm:inline">{t.download}</span>
                         </a>
                       </div>
                     ))
                   ) : (
-                    <div className="flex items-center justify-between bg-gray-50 rounded-xl px-3 sm:px-4 py-2 sm:py-3 gap-2"
-                      style={{ border: '1px solid #E8C547' }}>
+                    <div className="flex items-center justify-between rounded-xl px-3 sm:px-4 py-2 sm:py-3 gap-2"
+                      style={{ backgroundColor: '#2a2a3e', border: '1px solid #3a3a4e' }}>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm font-medium text-gray-800 truncate">{lookupResult.fileName}</p>
-                        <p className="text-xs text-gray-400">{formatSize(lookupResult.fileSize || 0)}</p>
+                        <p className="text-xs sm:text-sm font-medium text-white truncate">{lookupResult.fileName}</p>
+                        <p className="text-xs" style={{ color: '#8a9bb5' }}>{formatSize(lookupResult.fileSize || 0)}</p>
                       </div>
-                      <a href={`/api/download/${shareCode.trim()}`}
-                        className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0 min-h-10 sm:min-h-auto"
+                      <a href={`/api/download/${codeDigits.join('').trim()}`}
+                        className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
                         style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
                         <Download className="w-3 h-3" /><span className="hidden sm:inline">{t.download}</span>
                       </a>
