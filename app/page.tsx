@@ -500,24 +500,22 @@ export default function Home() {
           </div>
 
           {/* Find file card */}
-          <div id="find" className="w-full rounded-2xl px-8 sm:px-14 py-6 sm:py-8 flex flex-col items-center gap-4 sm:gap-5 bg-white shadow-sm"
-            style={{ border: '1px solid #E8C547' }}>
+          <div id="find" className="w-full rounded-3xl bg-white text-center flex flex-col items-center"
+            style={{ padding: '3rem 3.5rem', boxShadow: '0 2px 40px rgba(0,0,0,0.07)' }}>
             {/* Lock icon */}
-            <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#fdf6ec' }}>
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#D4A017" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <div className="flex items-center justify-center mb-6" style={{ width: 60, height: 60, backgroundColor: '#FEF3DC', borderRadius: '50%' }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C8860A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </div>
             
             {/* Title */}
-            <div className="text-center">
-              <p className="text-lg sm:text-xl font-bold mb-1" style={{ color: '#1a1a2e' }}>{t.enterYourShareCode}</p>
-              <p className="text-xs sm:text-sm text-gray-500">{t.typeThe6Digit}</p>
-            </div>
+            <h2 className="font-semibold mb-1.5" style={{ fontSize: 22, color: '#1A1A1A', letterSpacing: '-0.3px' }}>{t.enterYourShareCode}</h2>
+            <p className="text-sm leading-relaxed mb-9" style={{ color: '#888' }}>{t.typeThe6Digit}</p>
 
             {/* 6 digit boxes */}
-            <div className="flex items-center gap-1.5 sm:gap-2" dir="ltr">
+            <div className="flex items-center justify-center mb-8" style={{ gap: 10, padding: '0 4px' }} dir="ltr">
               {[0, 1, 2].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
@@ -526,11 +524,21 @@ export default function Home() {
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
                   onPaste={i === 0 ? handleDigitPaste : undefined}
-                  className="w-9 h-12 sm:w-11 sm:h-14 text-center text-lg sm:text-xl font-mono font-bold rounded-lg outline-none border-2 transition-colors"
-                  style={{ backgroundColor: '#f9f7f2', color: '#1a1a2e', borderColor: codeDigits[i] ? '#D4A017' : '#E8C547' }}
+                  className="outline-none text-center font-mono font-medium"
+                  style={{
+                    width: 56, height: 66, fontSize: 26,
+                    background: codeDigits[i] ? '#FEF3DC' : '#FAFAFA',
+                    border: `1.5px solid ${codeDigits[i] ? '#C8860A' : '#E0DAD0'}`,
+                    borderRadius: 14, color: codeDigits[i] ? '#8A5C00' : '#1A1A1A',
+                    transition: 'border-color 0.18s, background 0.18s, box-shadow 0.18s',
+                    flexShrink: 0,
+                  }}
+                  onFocus={e => { (e.target as HTMLInputElement).select(); }}
                 />
               ))}
-              <span className="text-gray-400 text-xl mx-1">·</span>
+              <div className="flex items-center justify-center" style={{ width: 12, flexShrink: 0 }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#CCC' }} />
+              </div>
               {[3, 4, 5].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
@@ -538,54 +546,69 @@ export default function Home() {
                   value={codeDigits[i]}
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
-                  className="w-9 h-12 sm:w-11 sm:h-14 text-center text-lg sm:text-xl font-mono font-bold rounded-lg outline-none border-2 transition-colors"
-                  style={{ backgroundColor: '#f9f7f2', color: '#1a1a2e', borderColor: codeDigits[i] ? '#D4A017' : '#E8C547' }}
+                  className="outline-none text-center font-mono font-medium"
+                  style={{
+                    width: 56, height: 66, fontSize: 26,
+                    background: codeDigits[i] ? '#FEF3DC' : '#FAFAFA',
+                    border: `1.5px solid ${codeDigits[i] ? '#C8860A' : '#E0DAD0'}`,
+                    borderRadius: 14, color: codeDigits[i] ? '#8A5C00' : '#1A1A1A',
+                    transition: 'border-color 0.18s, background 0.18s, box-shadow 0.18s',
+                    flexShrink: 0,
+                  }}
+                  onFocus={e => { (e.target as HTMLInputElement).select(); }}
                 />
               ))}
             </div>
 
             {/* Find button */}
             <button onClick={handleLookup} disabled={lookupLoading || codeDigits.join('').length < 6}
-              className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-40 text-white"
-              style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+              className="w-full flex items-center justify-center gap-2 font-medium transition-all"
+              style={{
+                padding: 15, fontSize: 15, borderRadius: 14, border: 'none',
+                background: codeDigits.join('').length === 6 ? '#C8860A' : '#E8E2D8',
+                color: codeDigits.join('').length === 6 ? '#fff' : '#AAA',
+                cursor: codeDigits.join('').length === 6 ? 'pointer' : 'not-allowed',
+                boxShadow: codeDigits.join('').length === 6 ? '0 4px 18px rgba(200,134,10,0.3)' : 'none',
+                letterSpacing: '0.1px',
+              }}>
               <Search className="w-4 h-4" />
               {lookupLoading ? t.searching : t.findMyFiles}
             </button>
 
             {/* Help text */}
-            <p className="text-xs text-center text-gray-400">{t.didntReceiveCode}</p>
+            <p className="text-xs leading-relaxed mt-5" style={{ color: '#BBB' }}>{t.didntReceiveCode}</p>
 
-            {lookupError && <p className="text-xs sm:text-sm text-red-500 text-center">{lookupError}</p>}
+            {lookupError && <p className="text-xs sm:text-sm text-red-500 text-center mt-3">{lookupError}</p>}
             
             <AnimatePresence>
               {lookupResult && (
-                <motion.div className="flex flex-col gap-2 w-full"
+                <motion.div className="flex flex-col gap-2 w-full mt-4"
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                   {lookupResult.isGroup && lookupResult.files ? (
                     lookupResult.files.map((f, i) => (
                       <div key={f.id || i} className="flex items-center justify-between rounded-xl px-3 sm:px-4 py-2 sm:py-3 gap-2 bg-gray-50"
-                        style={{ border: '1px solid #E8C547' }}>
+                        style={{ border: '1px solid #E0DAD0' }}>
                         <div className="min-w-0 flex-1">
                           <p className="text-xs sm:text-sm font-medium text-gray-800 truncate">{f.fileName}</p>
                           <p className="text-xs text-gray-400">{formatSize(f.fileSize)}</p>
                         </div>
                         <a href={`/api/download/${codeDigits.join('').trim()}?fileId=${f.id}`}
                           className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
-                          style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+                          style={{ background: '#C8860A' }}>
                           <Download className="w-3 h-3" /><span className="hidden sm:inline">{t.download}</span>
                         </a>
                       </div>
                     ))
                   ) : (
                     <div className="flex items-center justify-between rounded-xl px-3 sm:px-4 py-2 sm:py-3 gap-2 bg-gray-50"
-                      style={{ border: '1px solid #E8C547' }}>
+                      style={{ border: '1px solid #E0DAD0' }}>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs sm:text-sm font-medium text-gray-800 truncate">{lookupResult.fileName}</p>
                         <p className="text-xs text-gray-400">{formatSize(lookupResult.fileSize || 0)}</p>
                       </div>
                       <a href={`/api/download/${codeDigits.join('').trim()}`}
                         className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0"
-                        style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+                        style={{ background: '#C8860A' }}>
                         <Download className="w-3 h-3" /><span className="hidden sm:inline">{t.download}</span>
                       </a>
                     </div>
