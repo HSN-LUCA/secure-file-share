@@ -26,6 +26,63 @@ interface UploadResult {
   error?: string;
 }
 
+const translations = {
+  en: {
+    sendFiles: 'Send Files with Code',
+    tagline: 'Fast, Easy, Secure.',
+    chooseFile: 'Choose a file...',
+    selectMultiple: 'Select multiple files — one shared code for all',
+    or: 'or',
+    haveCode: 'Have a code number?',
+    enterShareCode: 'Enter your share code to find your files',
+    enterCode: 'Enter 6-digit code',
+    find: 'Find',
+    searching: 'Searching...',
+    upload: 'Upload',
+    uploading: 'Uploading...',
+    uploadMore: 'Upload More Files',
+    download: 'Download',
+    shareCodeAll: 'Share code for all files',
+    noFiles: 'No files found for this code. Please check and try again.',
+    somethingWrong: 'Something went wrong. Please try again.',
+    selectedAllShare: 'selected — all share one code',
+    file: 'file',
+    files: 'files',
+    uploaded: 'uploaded',
+    of: 'of',
+    copyCode: 'Copy code',
+    shareCode: 'Share code',
+    useThisCode: 'Use this code to download all',
+  },
+  ar: {
+    sendFiles: 'أرسل الملفات بالرمز',
+    tagline: 'سريع، سهل، آمن.',
+    chooseFile: '...اختر ملف',
+    selectMultiple: 'اختر ملفات متعددة — رمز مشترك واحد للجميع',
+    or: 'أو',
+    haveCode: 'هل لديك رمز؟',
+    enterShareCode: 'أدخل رمز المشاركة للعثور على ملفاتك',
+    enterCode: 'أدخل الرمز المكون من 6 أرقام',
+    find: 'بحث',
+    searching: '...جاري البحث',
+    upload: 'رفع',
+    uploading: '...جاري الرفع',
+    uploadMore: 'رفع المزيد من الملفات',
+    download: 'تحميل',
+    shareCodeAll: 'رمز المشاركة لجميع الملفات',
+    noFiles: 'لم يتم العثور على ملفات لهذا الرمز. يرجى التحقق والمحاولة مرة أخرى.',
+    somethingWrong: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
+    selectedAllShare: 'محدد — الكل يشارك رمز واحد',
+    file: 'ملف',
+    files: 'ملفات',
+    uploaded: 'تم الرفع',
+    of: 'من',
+    copyCode: 'نسخ الرمز',
+    shareCode: 'مشاركة الرمز',
+    useThisCode: 'استخدم هذا الرمز لتحميل جميع',
+  },
+};
+
 function generateGroupCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -57,6 +114,9 @@ async function getCaptchaToken(): Promise<string> {
 }
 
 export default function Home() {
+  const [lang, setLang] = useState<'en' | 'ar'>('en');
+  const t = translations[lang];
+
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<UploadResult[]>([]);
@@ -79,12 +139,12 @@ export default function Home() {
       const res = await fetch(`/api/download/${code}?info=true`);
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setLookupError('No files found for this code. Please check and try again.');
+        setLookupError(t.noFiles);
       } else {
         setLookupResult(data);
       }
     } catch {
-      setLookupError('Something went wrong. Please try again.');
+      setLookupError(t.somethingWrong);
     } finally {
       setLookupLoading(false);
     }
@@ -161,41 +221,74 @@ export default function Home() {
     }
   };
 
+  // ── Language switcher button ──────────────────────────────────────────────
+  const langSwitcher = (
+    <button
+      onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+      className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full flex items-center justify-center shadow-lg text-lg"
+      style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)', border: '2px solid rgba(255,255,255,0.5)' }}
+      aria-label="Toggle language"
+    >
+      {lang === 'en' ? '🇬🇧' : '🇦🇪'}
+    </button>
+  );
+
+  // ── Marquee bar ───────────────────────────────────────────────────────────
+  const marqueeBar = (
+    <div className="w-full py-2 overflow-hidden" style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
+      <div className="flex whitespace-nowrap animate-marquee">
+        <span className="text-white text-sm mx-4">
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+        </span>
+        <span className="text-white text-sm mx-4">
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+          Welcome to Hodhod for safe sharing &nbsp;★&nbsp; مرحبا بكم في هدهد للمشاركة الآمنة &nbsp;★&nbsp;
+        </span>
+      </div>
+    </div>
+  );
+
   // ── Success screen ──────────────────────────────────────────────────────────
   if (results.length > 0) {
     const groupCode = successResults[0]?.shareCode || '';
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-8"
+      <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-8"
         style={{ background: 'linear-gradient(135deg, #fdf6ec 0%, #faf4f0 50%, #f5f0f8 100%)' }}>
+        {langSwitcher}
         <motion.div className="w-full max-w-xs sm:max-w-sm md:max-w-md"
           initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
             <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-center mb-2" style={{ color: '#1a1a2e' }}>
-            {successResults.length} of {results.length} file{results.length > 1 ? 's' : ''} uploaded
+            {successResults.length} {t.of} {results.length} {results.length > 1 ? t.files : t.file} {t.uploaded}
           </h2>
           {groupCode && (
             <motion.div className="rounded-xl p-4 sm:p-6 mb-4 text-center bg-white shadow-sm"
               style={{ border: '1px solid #E8C547' }}
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <p className="text-xs sm:text-sm text-gray-500 mb-2">Share code for all files</p>
+              <p className="text-xs sm:text-sm text-gray-500 mb-2">{t.shareCodeAll}</p>
               <div className="flex items-center justify-center gap-2 sm:gap-3">
                 <p className="text-3xl sm:text-4xl font-mono font-bold tracking-widest" style={{ color: '#D4A017' }}>{groupCode}</p>
                 <div className="flex flex-col gap-1">
-                  <button onClick={() => copyCode(groupCode)} title="Copy code"
+                  <button onClick={() => copyCode(groupCode)} title={t.copyCode}
                     className="p-1.5 rounded-lg transition-colors hover:bg-yellow-50"
                     style={{ color: copied ? '#22c55e' : '#D4A017' }}>
                     {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </button>
-                  <button onClick={() => shareCode2(groupCode)} title="Share code"
+                  <button onClick={() => shareCode2(groupCode)} title={t.shareCode}
                     className="p-1.5 rounded-lg transition-colors hover:bg-yellow-50"
                     style={{ color: '#D4A017' }}>
                     <Share2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mt-2">Use this code to download all {successResults.length} file{successResults.length > 1 ? 's' : ''}</p>
+              <p className="text-xs text-gray-400 mt-2">{t.useThisCode} {successResults.length} {successResults.length > 1 ? t.files : t.file}</p>
             </motion.div>
           )}
           <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
@@ -215,7 +308,7 @@ export default function Home() {
           </div>
           <MagneticButton className="w-full px-4 sm:px-6 py-3 text-white font-semibold rounded-xl transition-colors min-h-12"
             style={{ backgroundColor: '#D4A017' }} onClick={reset}>
-            Upload More Files
+            {t.uploadMore}
           </MagneticButton>
         </motion.div>
       </div>
@@ -224,8 +317,14 @@ export default function Home() {
 
   // ── Main page ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden"
+    <div dir={lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col overflow-x-hidden"
       style={{ background: 'linear-gradient(135deg, #fdf6ec 0%, #faf4f0 50%, #f5f0f8 100%)' }}>
+
+      {/* Language switcher */}
+      {langSwitcher}
+
+      {/* Marquee bar */}
+      {marqueeBar}
 
       {/* Ambient color blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -242,14 +341,14 @@ export default function Home() {
           className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-2 sm:mb-3 max-w-2xl"
           style={{ color: '#1a1a2e', fontFamily: 'Georgia, "Times New Roman", serif' }}
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
-          Send Files with Code
+          {t.sendFiles}
         </motion.h1>
 
         <motion.p
           className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold italic mb-3 sm:mb-4 md:mb-6 max-w-2xl"
           style={{ color: '#8a9bb5', fontFamily: 'Georgia, "Times New Roman", serif' }}
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
-          Fast, Easy, Secure.
+          {t.tagline}
         </motion.p>
 
       </section>
@@ -281,13 +380,13 @@ export default function Home() {
                 <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full flex flex-col items-center justify-center shadow-lg"
                   style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)' }}>
                   <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-white mb-1" />
-                  <p className="text-white text-xs sm:text-sm font-bold">Choose a file...</p>
+                  <p className="text-white text-xs sm:text-sm font-bold">{t.chooseFile}</p>
                 </div>
               </div>
               <input ref={fileInputRef} type="file" multiple onChange={handleFileInputChange}
                 className="hidden" aria-label="Select files to upload" />
             </motion.div>
-            <p className="text-xs text-gray-400 text-center px-2">Select multiple files — one shared code for all</p>
+            <p className="text-xs text-gray-400 text-center px-2">{t.selectMultiple}</p>
           </div>
 
           {/* File list + upload button */}
@@ -315,7 +414,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-xs text-gray-400 text-center mb-3">
-                  {files.length} file{files.length > 1 ? 's' : ''} selected — all share one code
+                  {files.length} {files.length > 1 ? t.files : t.file} {t.selectedAllShare}
                 </p>
                 <div className="flex justify-center">
                   <MagneticButton onClick={handleUpload} disabled={uploading}
@@ -324,7 +423,7 @@ export default function Home() {
                     <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
                       <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: '#D4A017' }} />
                     </div>
-                    <span className="uppercase tracking-wider">{uploading ? 'Uploading...' : 'Upload'}</span>
+                    <span className="uppercase tracking-wider">{uploading ? t.uploading : t.upload}</span>
                   </MagneticButton>
                 </div>
                 {uploadError && <p className="mt-3 text-xs sm:text-sm text-red-600 text-center">{uploadError}</p>}
@@ -335,7 +434,7 @@ export default function Home() {
           {/* Divider */}
           <div className="flex items-center gap-2 sm:gap-3 w-full my-4 sm:my-6">
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, #E8C547)' }} />
-            <span className="text-sm sm:text-base font-bold text-gray-900">or</span>
+            <span className="text-sm sm:text-base font-bold text-gray-900">{t.or}</span>
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, #E8C547)' }} />
           </div>
 
@@ -343,21 +442,21 @@ export default function Home() {
           <div id="find" className="w-full rounded-2xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-3 sm:gap-4 bg-white shadow-sm"
             style={{ border: '1px solid #E8C547' }}>
             <div className="text-center">
-              <p className="text-sm sm:text-base font-semibold" style={{ color: '#1a1a2e' }}>Have a code number?</p>
-              <p className="text-xs sm:text-sm text-gray-500">Enter your share code to find your files</p>
+              <p className="text-sm sm:text-base font-semibold" style={{ color: '#1a1a2e' }}>{t.haveCode}</p>
+              <p className="text-xs sm:text-sm text-gray-500">{t.enterShareCode}</p>
             </div>
-            <input type="text" inputMode="numeric" placeholder="Enter 6-digit code"
+            <input type="text" inputMode="numeric" placeholder={t.enterCode}
               value={shareCode}
               onChange={e => { setShareCode(e.target.value); setLookupResult(null); setLookupError(''); }}
               onKeyDown={e => e.key === 'Enter' && handleLookup()}
               maxLength={10}
-              className="w-full text-center text-lg sm:text-2xl font-mono font-bold tracking-widest rounded-xl px-3 sm:px-4 py-2 sm:py-3 outline-none border-2 transition-colors bg-gray-50 min-h-12"
-              style={{ borderColor: shareCode ? '#D4A017' : '#E8C547', color: '#D4A017' }} />
+              className="w-full text-center text-lg sm:text-2xl font-mono font-bold tracking-widest rounded-xl px-3 sm:px-4 py-2 sm:py-3 outline-none border-2 transition-colors min-h-12 placeholder-white"
+              style={{ background: 'linear-gradient(135deg, #F5C842, #D4A017)', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }} />
             <MagneticButton onClick={handleLookup} disabled={lookupLoading || !shareCode.trim()}
               className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-sm sm:text-base font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 text-white min-h-12 sm:min-h-14"
               style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
               <Search className="w-4 h-4" />
-              {lookupLoading ? 'Searching...' : 'Find'}
+              {lookupLoading ? t.searching : t.find}
             </MagneticButton>
             {lookupError && <p className="text-xs sm:text-sm text-red-500 text-center">{lookupError}</p>}
             <AnimatePresence>
@@ -375,7 +474,7 @@ export default function Home() {
                         <a href={`/api/download/${shareCode.trim()}?fileId=${f.id}`}
                           className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0 min-h-10 sm:min-h-auto"
                           style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
-                          <Download className="w-3 h-3" /><span className="hidden sm:inline">Download</span>
+                          <Download className="w-3 h-3" /><span className="hidden sm:inline">{t.download}</span>
                         </a>
                       </div>
                     ))
@@ -389,7 +488,7 @@ export default function Home() {
                       <a href={`/api/download/${shareCode.trim()}`}
                         className="ml-2 flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-semibold text-white flex-shrink-0 min-h-10 sm:min-h-auto"
                         style={{ background: 'linear-gradient(to right, #F5C842, #D4A017)' }}>
-                        <Download className="w-3 h-3" /><span className="hidden sm:inline">Download</span>
+                        <Download className="w-3 h-3" /><span className="hidden sm:inline">{t.download}</span>
                       </a>
                     </div>
                   )}
