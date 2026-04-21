@@ -526,7 +526,7 @@ export default function Home() {
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
                   onPaste={i === 0 ? handleDigitPaste : undefined}
-                  className="w-11 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-mono font-bold rounded-xl outline-none border-2 transition-colors"
+                  className="w-9 h-12 sm:w-11 sm:h-14 text-center text-lg sm:text-xl font-mono font-bold rounded-lg outline-none border-2 transition-colors"
                   style={{ backgroundColor: '#f9f7f2', color: '#1a1a2e', borderColor: codeDigits[i] ? '#D4A017' : '#E8C547' }}
                 />
               ))}
@@ -538,7 +538,7 @@ export default function Home() {
                   value={codeDigits[i]}
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
-                  className="w-11 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-mono font-bold rounded-xl outline-none border-2 transition-colors"
+                  className="w-9 h-12 sm:w-11 sm:h-14 text-center text-lg sm:text-xl font-mono font-bold rounded-lg outline-none border-2 transition-colors"
                   style={{ backgroundColor: '#f9f7f2', color: '#1a1a2e', borderColor: codeDigits[i] ? '#D4A017' : '#E8C547' }}
                 />
               ))}
