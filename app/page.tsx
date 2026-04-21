@@ -500,7 +500,7 @@ export default function Home() {
           </div>
 
           {/* Find file card */}
-          <div id="find" className="w-full rounded-2xl px-6 sm:px-10 py-6 sm:py-8 flex flex-col items-center gap-4 sm:gap-5 bg-white shadow-sm"
+          <div id="find" className="w-full rounded-2xl px-8 sm:px-14 py-6 sm:py-8 flex flex-col items-center gap-4 sm:gap-5 bg-white shadow-sm"
             style={{ border: '1px solid #E8C547' }}>
             {/* Lock icon */}
             <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#fdf6ec' }}>
@@ -517,7 +517,7 @@ export default function Home() {
             </div>
 
             {/* 6 digit boxes */}
-            <div className="flex items-center gap-2 sm:gap-3" dir="ltr">
+            <div className="flex items-center gap-1.5 sm:gap-2" dir="ltr">
               {[0, 1, 2].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
