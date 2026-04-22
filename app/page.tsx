@@ -417,7 +417,7 @@ export default function Home() {
       {/* Upload + Find section */}
       <section id="upload" className="relative z-10 flex flex-col items-center px-3 sm:px-4 pb-8 sm:pb-12 md:pb-20">
         <motion.div
-          className="w-full max-w-xs sm:max-w-sm md:max-w-md"
+          className="w-full max-w-xs sm:max-w-sm md:max-w-lg"
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
 
           {/* Upload circle */}
@@ -500,9 +500,8 @@ export default function Home() {
           </div>
 
           {/* Find file card */}
-          <div id="find" className="w-full rounded-3xl bg-white text-center flex flex-col items-center"
-            style={{ padding: '2rem 1.25rem', boxShadow: '0 2px 40px rgba(0,0,0,0.07)' }}>
-            <style>{`@media(min-width:640px){#find{padding:3rem 3.5rem !important}}`}</style>
+          <div id="find" className="w-full rounded-3xl bg-white text-center flex flex-col items-center px-5 py-8 sm:px-10 sm:py-12 md:px-14 md:py-12"
+            style={{ boxShadow: '0 2px 40px rgba(0,0,0,0.07)', maxWidth: 480, margin: '0 auto' }}>
             {/* Lock icon */}
             <div className="flex items-center justify-center mb-6" style={{ width: 60, height: 60, backgroundColor: '#FEF3DC', borderRadius: '50%' }}>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C8860A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
