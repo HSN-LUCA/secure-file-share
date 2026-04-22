@@ -554,9 +554,9 @@ export default function Home() {
 
             {/* Find button */}
             <button onClick={handleLookup} disabled={lookupLoading || codeDigits.join('').length < 6}
-              className="w-full flex items-center justify-center gap-2 font-medium transition-all"
+              className="flex items-center justify-center gap-2 font-medium transition-all mx-auto"
               style={{
-                padding: 15, fontSize: 15, borderRadius: 14, border: 'none',
+                padding: '15px 48px', fontSize: 15, borderRadius: 14, border: 'none',
                 background: codeDigits.join('').length === 6 ? '#C8860A' : '#E8E2D8',
                 color: codeDigits.join('').length === 6 ? '#fff' : '#AAA',
                 cursor: codeDigits.join('').length === 6 ? 'pointer' : 'not-allowed',
