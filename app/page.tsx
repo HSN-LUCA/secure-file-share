@@ -381,9 +381,6 @@ export default function Home() {
       {/* Language switcher */}
       {langSwitcher}
 
-      {/* Marquee bar */}
-      {marqueeBar}
-
       {/* Ambient color blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-30"
@@ -393,9 +390,6 @@ export default function Home() {
         <div className="absolute bottom-40 left-1/4 w-72 h-72 rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, #a0c4e8 0%, transparent 70%)' }} />
       </div>
-      {/* Spacer between marquee and hero */}
-      <div className="h-16 sm:h-20 md:h-24" />
-
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center text-center px-3 sm:px-6 pt-16 sm:pt-20 md:pt-28 pb-8 sm:pb-12 md:pb-16">
         <motion.h1
@@ -515,7 +509,7 @@ export default function Home() {
             <p className="text-sm leading-relaxed mb-9" style={{ color: '#888' }}>{t.typeThe6Digit}</p>
 
             {/* 6 digit boxes */}
-            <div className="flex items-center justify-center mb-20 gap-1.5 sm:gap-2.5" style={{ padding: '0 4px' }} dir="ltr">
+            <div className="flex items-center justify-center mb-8 gap-1.5 sm:gap-2.5" style={{ padding: '0 4px' }} dir="ltr">
               {[0, 1, 2].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
