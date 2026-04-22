@@ -501,7 +501,8 @@ export default function Home() {
 
           {/* Find file card */}
           <div id="find" className="w-full rounded-3xl bg-white text-center flex flex-col items-center"
-            style={{ padding: '3rem 3.5rem', boxShadow: '0 2px 40px rgba(0,0,0,0.07)' }}>
+            style={{ padding: '2rem 1.25rem', boxShadow: '0 2px 40px rgba(0,0,0,0.07)' }}>
+            <style>{`@media(min-width:640px){#find{padding:3rem 3.5rem !important}}`}</style>
             {/* Lock icon */}
             <div className="flex items-center justify-center mb-6" style={{ width: 60, height: 60, backgroundColor: '#FEF3DC', borderRadius: '50%' }}>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C8860A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -515,7 +516,7 @@ export default function Home() {
             <p className="text-sm leading-relaxed mb-9" style={{ color: '#888' }}>{t.typeThe6Digit}</p>
 
             {/* 6 digit boxes */}
-            <div className="flex items-center justify-center mb-16" style={{ gap: 10, padding: '0 4px' }} dir="ltr">
+            <div className="flex items-center justify-center mb-16 gap-1.5 sm:gap-2.5" style={{ padding: '0 4px' }} dir="ltr">
               {[0, 1, 2].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
@@ -524,9 +525,8 @@ export default function Home() {
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
                   onPaste={i === 0 ? handleDigitPaste : undefined}
-                  className="outline-none text-center font-mono font-medium"
+                  className="outline-none text-center font-mono font-medium w-10 h-12 text-xl sm:w-14 sm:h-[66px] sm:text-[26px]"
                   style={{
-                    width: 56, height: 66, fontSize: 26,
                     background: codeDigits[i] ? '#FEF3DC' : '#FAFAFA',
                     border: `1.5px solid ${codeDigits[i] ? '#C8860A' : '#E0DAD0'}`,
                     borderRadius: 14, color: codeDigits[i] ? '#8A5C00' : '#1A1A1A',
@@ -546,9 +546,8 @@ export default function Home() {
                   value={codeDigits[i]}
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
-                  className="outline-none text-center font-mono font-medium"
+                  className="outline-none text-center font-mono font-medium w-10 h-12 text-xl sm:w-14 sm:h-[66px] sm:text-[26px]"
                   style={{
-                    width: 56, height: 66, fontSize: 26,
                     background: codeDigits[i] ? '#FEF3DC' : '#FAFAFA',
                     border: `1.5px solid ${codeDigits[i] ? '#C8860A' : '#E0DAD0'}`,
                     borderRadius: 14, color: codeDigits[i] ? '#8A5C00' : '#1A1A1A',
