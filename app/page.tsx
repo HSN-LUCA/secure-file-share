@@ -515,7 +515,7 @@ export default function Home() {
             <p className="text-sm leading-relaxed mb-9" style={{ color: '#888' }}>{t.typeThe6Digit}</p>
 
             {/* 6 digit boxes */}
-            <div className="flex items-center justify-center mb-12" style={{ gap: 10, padding: '0 4px' }} dir="ltr">
+            <div className="flex items-center justify-center mb-16" style={{ gap: 10, padding: '0 4px' }} dir="ltr">
               {[0, 1, 2].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
