@@ -515,7 +515,7 @@ export default function Home() {
             <p className="text-sm leading-relaxed mb-9" style={{ color: '#888' }}>{t.typeThe6Digit}</p>
 
             {/* 6 digit boxes */}
-            <div className="flex items-center justify-center mb-16 gap-1.5 sm:gap-2.5" style={{ padding: '0 4px' }} dir="ltr">
+            <div className="flex items-center justify-center mb-20 gap-1.5 sm:gap-2.5" style={{ padding: '0 4px' }} dir="ltr">
               {[0, 1, 2].map(i => (
                 <input key={i}
                   ref={el => { codeInputRefs.current[i] = el; }}
@@ -524,13 +524,13 @@ export default function Home() {
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
                   onPaste={i === 0 ? handleDigitPaste : undefined}
-                  className="outline-none text-center font-mono font-medium w-10 h-12 text-xl sm:w-14 sm:h-[66px] sm:text-[26px]"
+                  className="!w-10 !h-12 sm:!w-14 sm:!h-[66px] outline-none text-center font-mono font-medium text-xl sm:text-[26px] !p-0"
                   style={{
                     background: codeDigits[i] ? '#FEF3DC' : '#FAFAFA',
                     border: `1.5px solid ${codeDigits[i] ? '#C8860A' : '#E0DAD0'}`,
                     borderRadius: 14, color: codeDigits[i] ? '#8A5C00' : '#1A1A1A',
                     transition: 'border-color 0.18s, background 0.18s, box-shadow 0.18s',
-                    flexShrink: 0,
+                    flexShrink: 0, caretColor: 'transparent',
                   }}
                   onFocus={e => { (e.target as HTMLInputElement).select(); }}
                 />
@@ -545,13 +545,13 @@ export default function Home() {
                   value={codeDigits[i]}
                   onChange={e => handleDigitChange(i, e.target.value)}
                   onKeyDown={e => handleDigitKeyDown(i, e)}
-                  className="outline-none text-center font-mono font-medium w-10 h-12 text-xl sm:w-14 sm:h-[66px] sm:text-[26px]"
+                  className="!w-10 !h-12 sm:!w-14 sm:!h-[66px] outline-none text-center font-mono font-medium text-xl sm:text-[26px] !p-0"
                   style={{
                     background: codeDigits[i] ? '#FEF3DC' : '#FAFAFA',
                     border: `1.5px solid ${codeDigits[i] ? '#C8860A' : '#E0DAD0'}`,
                     borderRadius: 14, color: codeDigits[i] ? '#8A5C00' : '#1A1A1A',
                     transition: 'border-color 0.18s, background 0.18s, box-shadow 0.18s',
-                    flexShrink: 0,
+                    flexShrink: 0, caretColor: 'transparent',
                   }}
                   onFocus={e => { (e.target as HTMLInputElement).select(); }}
                 />
