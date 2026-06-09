@@ -25,7 +25,7 @@ export const FILE_CONSTRAINTS = {
 // Allowed file types
 export const ALLOWED_FILE_TYPES = {
   DOCUMENTS: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf', 'odt'],
-  IMAGES: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'],
+  IMAGES: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'heic', 'heif'],
   ARCHIVES: ['zip', 'rar', '7z', 'tar', 'gz'],
   MEDIA: ['mp4', 'webm', 'mp3', 'wav', 'ogg', 'm4a'],
 };
@@ -50,12 +50,14 @@ export const MIME_TYPES: Record<string, string[]> = {
   rtf: ['application/rtf'],
   odt: ['application/vnd.oasis.opendocument.text'],
   png: ['image/png'],
-  jpg: ['image/jpeg'],
-  jpeg: ['image/jpeg'],
+  jpg: ['image/jpeg', 'image/jpg'],
+  jpeg: ['image/jpeg', 'image/jpg'],
   gif: ['image/gif'],
   webp: ['image/webp'],
   svg: ['image/svg+xml'],
   bmp: ['image/bmp'],
+  heic: ['image/heic', 'image/heif', 'application/octet-stream'],
+  heif: ['image/heif', 'image/heic', 'application/octet-stream'],
   zip: ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'],
   rar: ['application/x-rar-compressed', 'application/vnd.rar', 'application/x-compressed', 'application/octet-stream'],
   '7z': ['application/x-7z-compressed'],
