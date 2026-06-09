@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef } from 'react';
 import { Upload, X, CheckCircle, Download, Search, Copy, Share2 } from 'lucide-react';
 import MagneticButton from '@/components/ui/MagneticButton';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface FileInfo {
   id?: string;
@@ -609,6 +610,27 @@ export default function Home() {
               )}
             </AnimatePresence>
           </div>
+        </motion.div>
+      </section>
+
+      {/* QR Code section — scan to open on another device */}
+      <section className="relative z-10 flex flex-col items-center px-3 sm:px-4 pb-10 sm:pb-16 md:pb-20">
+        <motion.div
+          className="flex flex-col items-center text-center"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm" style={{ border: '1px solid #e8e0d0' }}>
+            <QRCodeSVG
+              value="https://hodhod-share.vercel.app"
+              size={120}
+              bgColor="#FFFFFF"
+              fgColor="#1a1a2e"
+              level="M"
+              includeMargin={false}
+            />
+          </div>
+          <p className="text-xs sm:text-sm text-gray-500 mt-3 max-w-[200px]">
+            {lang === 'ar' ? 'امسح للفتح على جهاز آخر' : 'Scan to open on another device'}
+          </p>
         </motion.div>
       </section>
     </div>
