@@ -620,7 +620,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
           <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm" style={{ border: '1px solid #e8e0d0' }}>
             <QRCodeSVG
-              value="https://hodhod-share.vercel.app"
+              value="https://www.hodhod.space/"
               size={120}
               bgColor="#FFFFFF"
               fgColor="#1a1a2e"
