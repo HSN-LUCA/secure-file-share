@@ -76,7 +76,7 @@ const developmentConfig: EnvironmentConfig = {
   connectionPoolSize: 5,
   enableQueryLogging: true,
 
-  maxFileSize: 100 * 1024 * 1024, // 100MB
+  maxFileSize: 500 * 1024 * 1024, // 500MB
   enableVirusScanningBeforeUpload: false,
   enableEncryption: true,
 

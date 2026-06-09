@@ -18,6 +18,10 @@ import { createFile, getUserById, getEnterprisePlan } from '@/lib/db/queries';
 import { createAnalytics } from '@/lib/db/queries';
 import { PLAN_LIMITS, UserPlan } from '@/types';
 import { verifyCaptchaToken, getCaptchaErrorMessage } from '@/lib/captcha/verifier';
+
+// Next.js Route Segment Config — allow large file uploads (up to 500MB)
+export const runtime = 'nodejs';
+export const maxDuration = 60; // 60 seconds for large file uploads
 import { createRateLimitingMiddleware, getClientIp, createRateLimitErrorResponse } from '@/lib/middleware/rate-limiting';
 import { createBotDetectionMiddleware, logBotDetectionEvent } from '@/lib/middleware/bot-detection';
 import { getUserFromRequest } from '@/lib/auth/middleware';

@@ -7,9 +7,9 @@ import { PLAN_LIMITS, UserPlan } from '@/types';
 
 describe('Plan Enforcement - File Size Limits', () => {
   describe('Free Plan', () => {
-    it('should allow files up to 100MB', () => {
+    it('should allow files up to 500MB', () => {
       const planLimits = PLAN_LIMITS['free'];
-      expect(planLimits.maxFileSize).toBe(100 * 1024 * 1024);
+      expect(planLimits.maxFileSize).toBe(500 * 1024 * 1024);
     });
 
     it('should reject files larger than 100MB', () => {

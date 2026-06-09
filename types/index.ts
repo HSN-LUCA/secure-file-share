@@ -83,7 +83,7 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<UserPlan, PlanLimits> = {
   free: {
-    maxFileSize: 100 * 1024 * 1024, // 100MB
+    maxFileSize: 500 * 1024 * 1024, // 500MB
     storageDurationMinutes: 20,
     uploadsPerDay: 5,
     unlimited: false,
