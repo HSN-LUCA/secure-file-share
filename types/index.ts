@@ -85,7 +85,7 @@ export const PLAN_LIMITS: Record<UserPlan, PlanLimits> = {
   free: {
     maxFileSize: 500 * 1024 * 1024, // 500MB
     storageDurationMinutes: 20,
-    uploadsPerDay: 5,
+    uploadsPerDay: 20,
     unlimited: false,
   },
   paid: {
