@@ -74,6 +74,12 @@ export function validateMimeType(
     };
   }
 
+  // Allow empty MIME type or application/octet-stream as fallback
+  // Many mobile browsers and some desktop browsers don't report accurate MIME types
+  if (!mimeType || mimeType === '' || mimeType === 'application/octet-stream') {
+    return { valid: true };
+  }
+
   if (!allowedMimeTypes.includes(mimeType)) {
     return {
       valid: false,
